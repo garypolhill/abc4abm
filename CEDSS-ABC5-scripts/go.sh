@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SPLIT=${1-nosplit}
+SPLIT=${1-splitU}
 MAX_PROC=32
 PROC=0
 COUNT=0

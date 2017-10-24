@@ -1,0 +1,566 @@
+name,category,subcategory,essential,hedonic-score,cost-list,energy-rating,embodied-energy,breakdown-probability,first-step-available,last-step-available
+gas-standard-boiler-D,heating,gas-boiler-sub,TRUE,0,[2000],6,0,0.013,18,27
+gas-standard-boiler-F,heating,gas-boiler-sub,TRUE,0,[2000],8,0,0.013,2,17
+gas-standard-boiler-G,heating,gas-boiler-sub,TRUE,0,[2000],9,0,0.013,0,1
+gas-condensing-boiler-A,heating,gas-conboiler-sub,TRUE,0,[2500],3,0,0.013,36,59
+gas-condensing-boiler-B,heating,gas-conboiler-sub,TRUE,0,[2500],4,0,0.013,0,35
+gas-condensing-boiler-A2,heating,gas-conboiler-sub,TRUE,0,[1750],3,0,0.013,60,Inf
+oil-standard-boiler-C,heating,oil-boiler-sub,TRUE,0,[2000],5,0,0.013,18,27
+oil-standard-boiler-D,heating,oil-boiler-sub,TRUE,0,[2000],6,0,0.013,2,17
+oil-standard-boiler-G,heating,oil-boiler-sub,TRUE,0,[2000],9,0,0.013,0,1
+oil-condensing-boiler-A,heating,oil-conboiler-sub,TRUE,0,[2500],3,0,0.013,0,59
+oil-condensing-boiler-A2,heating,oil-conboiler-sub,TRUE,0,[1750],3,0,0.013,60,Inf
+electric-heaters,heating,electric-heating,TRUE,0,[2000],0,0,0.013,0,Inf
+Teba TFR14,cooker,electric-cooker-sub,TRUE,0,[200],11,0,0.014,0,3
+Creda Capri C150E,cooker,electric-cooker-sub,TRUE,0,[250 250 250 250 230 230],11,0,0.014,0,5
+Beko DV 5631,cooker,electric-cooker-sub,TRUE,0,[400 400 400 400 380 380 380 380 380 380 380 380],11,0,0.014,0,11
+Tricity Bendix SIE 324,cooker,electric-cooker-sub,TRUE,0,[350 350 330 330 330 330 330 330 329 329],11,0,0.014,4,13
+Jackson by Creda J15 1EW,cooker,electric-cooker-sub,TRUE,0,[240],11,0,0.014,6,11
+Belling Forum 335,cooker,electric-cooker-sub,TRUE,0,[240 240 239 239 239 239 238 238 238 238 238 238 238 238 238 238 238 238 249 249 250 250 250 250 250 250],11,0,0.014,12,37
+Zanussi ZCE611X,cooker,electric-cooker-sub,TRUE,0,[395 395 345 345 345 345],11,0,0.014,12,17
+Zanussi ZCE531X,cooker,electric-cooker-sub,TRUE,0,[249],11,0,0.014,14,27
+Zanussi ZCE641,cooker,electric-cooker-sub,TRUE,0,[340 340 350 350],11,0,0.014,18,21
+New World 50WLG,cooker,electric-cooker-sub,TRUE,0,[250],11,0,0.014,22,23
+Belling Forum 317,cooker,electric-cooker-sub,TRUE,0,[300],11,0,0.014,24,31
+Beko D532,cooker,electric-cooker-sub,TRUE,0,[200 200 200 200 200 200 200 200 200 200 220 220 230 230],11,0,0.014,28,43
+Hotpoint HL500 electric,cooker,electric-cooker-sub,TRUE,0,[330],11,0,0.014,32,37
+Indesit KD3E1,cooker,electric-cooker-sub,TRUE,0,[270 270 280 280],11,0,0.014,38,43
+Hotpoint HW170E,cooker,electric-cooker-sub,TRUE,0,[330],11,0,0.014,38,39
+Creda Menu M350E,cooker,chob-cooker-sub,TRUE,0,[500 500 500 500 470 470],11,0,0.014,0,5
+Tricity Bendix SIE 514,cooker,chob-cooker-sub,TRUE,0,[550 550 499 499 499 499 499 499],11,0,0.014,4,11
+Beko DVC61,cooker,chob-cooker-sub,TRUE,0,[380],11,0,0.014,6,13
+Creda X155,cooker,chob-cooker-sub,TRUE,0,[400],11,0,0.014,6,13
+Tricity Bendix SIE 554,cooker,chob-cooker-sub,TRUE,0,[498],11,0,0.014,12,13
+Tricity Bendix SE340,cooker,chob-cooker-sub,TRUE,0,[449],11,0,0.014,14,17
+Belling 644,cooker,chob-cooker-sub,TRUE,0,[490 490 488 488 489 489 489 489 489 489 489 489 489 489 500 500],11,0,0.014,14,29
+Beko DCC 4521,cooker,chob-cooker-sub,TRUE,0,[300],11,0,0.014,16,23
+Leisure Roma 50,cooker,chob-cooker-sub,TRUE,0,[380],11,0,0.014,18,31
+Beko DC543,cooker,chob-cooker-sub,TRUE,0,[300 300 300 300 299 299 299 299],11,0,0.014,24,31
+Leisure Zenith ZE6HV,cooker,chob-cooker-sub,TRUE,0,[430],11,0,0.014,30,31
+Beko DVC563,cooker,chob-cooker-sub,TRUE,0,[300 300 300 300 300 300 320 320 350 350],11,0,0.014,32,43
+Indesit K6 C320,cooker,chob-cooker-sub,TRUE,0,[300 300 300 300 300 300 350 350 360 360],11,0,0.014,32,43
+Hotpoint EW74,cooker,chob-cooker-sub,TRUE,0,[500],11,0,0.014,32,37
+Hotpoint Creda C367,cooker,chob-cooker-sub,TRUE,0,[500 500 520 520],11,0,0.014,38,43
+Stoves Newhome 800 DF DOM,cooker,dual-fuel-cooker-sub,TRUE,0,[650 650 650 650 650 650 650 650 650 650 649 649 648 648 639 639 639 639],11,0,0.014,0,17
+Leisure Rangmaster 110,cooker,dual-fuel-cooker-sub,TRUE,0,[1100],11,0,0.014,4,5
+Zanussi ZCM610X,cooker,dual-fuel-cooker-sub,TRUE,0,[400 400 400 400 399 399],11,0,0.014,4,9
+Leisure Victoriana deluxe,cooker,dual-fuel-cooker-sub,TRUE,0,[1100],11,0,0.014,6,7
+Indesit KP9507 XE/0,cooker,dual-fuel-cooker-sub,TRUE,0,[499],11,0,0.014,8,11
+Stoves Newhome 1000 DFDL,cooker,dual-fuel-cooker-sub,TRUE,0,[799 799 749 749],11,0,0.014,10,13
+Indesit KP9507XE/G,cooker,dual-fuel-cooker-sub,TRUE,0,[495],11,0,0.014,14,19
+Stoves Newhome 600SiDOm dual,cooker,dual-fuel-cooker-sub,TRUE,0,[469],11,0,0.014,14,29
+Indesit K344E(X)G,cooker,dual-fuel-cooker-sub,TRUE,0,[199],11,0,0.014,18,21
+Indesit KP9507E.B(X)/G,cooker,dual-fuel-cooker-sub,TRUE,0,[469 469 399 399],11,0,0.014,20,23
+New World Ellingwood,cooker,dual-fuel-cooker-sub,TRUE,0,[700],11,0,0.014,22,23
+Zanussi stainless steel,cooker,dual-fuel-cooker-sub,TRUE,0,[249],11,0,0.014,24,25
+Flavel Aspen AP10,cooker,dual-fuel-cooker-sub,TRUE,0,[600 600 600 600 600 600 600 600 599 599 599 599 599 599 600 600 600 600],11,0,0.014,24,43
+Indesit KP1001X,cooker,dual-fuel-cooker-sub,TRUE,0,[750],11,0,0.014,26,29
+Indesit K3G21,cooker,dual-fuel-cooker-sub,TRUE,0,[179],11,0,0.014,30,31
+Leisure Roma RM10FRS,cooker,dual-fuel-cooker-sub,TRUE,0,[900],11,0,0.014,30,31
+Belling Range cooker,cooker,dual-fuel-cooker-sub,TRUE,0,[950],11,0,0.014,38,39
+Indesit dual fuel K3G11,cooker,dual-fuel-cooker-sub,TRUE,0,[220],11,0,0.014,38,39
+Belling Country Chef 100DF,cooker,dual-fuel-cooker-sub,TRUE,0,[800],11,0,0.014,38,39
+Flavel FL95FR,cooker,dual-fuel-cooker-sub,TRUE,0,[500],11,0,0.014,40,43
+Teba TFU 21,cooker,gas-cooker-sub,TRUE,0,[200],11,0,0.014,0,3
+New World 50HLG,cooker,gas-cooker-sub,TRUE,0,[330 330 330 330 330 330 310 310 310 310 310 310 310 310 310 310 310 310 310 310 310 310 298 298 298 298 298 298 298 298 298 298 297 297 297 297 297 297 350 350],11,0,0.014,0,39
+Stoves Newhome 600 SiDOM gas,cooker,gas-cooker-sub,TRUE,0,[550 550 550 550 500 500 499 499 499 499 495 495 469 469 469 469 469 469 469 469 469 469 469 469 469 469 469 469 469 469],11,0,0.014,0,29
+Canon Lincoln,cooker,gas-cooker-sub,TRUE,0,[268 268 266 266],11,0,0.014,4,7
+Parkinson Cowan SIG 414,cooker,gas-cooker-sub,TRUE,0,[399 399 399 399 380 380 380 380 360 360 360 360],11,0,0.014,8,19
+Creda L 152G,cooker,gas-cooker-sub,TRUE,0,[299],11,0,0.014,8,11
+Canon Oakley,cooker,gas-cooker-sub,TRUE,0,[339 339 335 335 335 335 335 335 335 335],11,0,0.014,12,21
+Beko DVG695,cooker,gas-cooker-sub,TRUE,0,[380 380 380 380 380 380 380 380 380 380 379 379 379 379 379 379],11,0,0.014,22,37
+New World Range Cooker 100G,cooker,gas-cooker-sub,TRUE,0,[700],11,0,0.014,30,31
+Hotpoint HL500 gas,cooker,gas-cooker-sub,TRUE,0,[330],11,0,0.014,32,37
+Beko SG562,cooker,gas-cooker-sub,TRUE,0,[170 170 200 200],11,0,0.014,38,43
+Indesit KD6G25,cooker,gas-cooker-sub,TRUE,0,[430],11,0,0.014,38,39
+Beko DVG692,cooker,gas-cooker-sub,TRUE,0,[400],11,0,0.014,40,43
+New World 55 HLG,cooker,gas-cooker-sub,TRUE,0,[430],11,0,0.014,40,43
+Teba SBUZ01-08,freezer,freezer-sub,FALSE,0,[130 130 130 130 130 130 120 120],5,0,0.014,0,7
+Tricity Bendix Onyx 125FA,freezer,freezer-sub,FALSE,0,[160 160 160 160 160 160 150 150 150 150 150 150],5,0,0.014,0,11
+Beko TZS490,freezer,freezer-sub,FALSE,0,[230 230 230 230 220 220 220 220 220 220 220 220 220 220 220 220 198 198 198 198 198 198],5,0,0.014,0,21
+Whirlpool 7.3 cu.ft chest,freezer,freezer-sub,FALSE,0,[200 200 179 179],5,0,0.014,8,11
+Whirlpool 11.6 cu.ft,freezer,freezer-sub,FALSE,0,[229],5,0,0.014,10,11
+Beko ZSA436,freezer,freezer-sub,FALSE,0,[160 160 150 150 150 150 160 160],3,0,0.014,12,19
+Zanussi ZCF37C,freezer,freezer-sub,FALSE,0,[120 120 119 119 119 119 119 119],5,0,0.014,12,19
+Hotpoint RZA50,freezer,freezer-sub,FALSE,0,[319],3,0,0.014,12,13
+Electrolux EU6241T,freezer,freezer-sub,FALSE,0,[138],4,0,0.014,20,21
+Hotpoint RZA81,freezer,freezer-sub,FALSE,0,[400],4,0,0.014,20,23
+Zanussi ZCF77C,freezer,freezer-sub,FALSE,0,[179],5,0,0.014,20,27
+fridge-submaster MTBZ102 tabletop,freezer,freezer-sub,FALSE,0,[200],3,0,0.014,22,31
+Beko TZSB496,freezer,freezer-sub,FALSE,0,[200],4,0,0.014,24,27
+Beko TZDA523,freezer,freezer-sub,FALSE,0,[200 200 220 220 220 220 220 220 220 220],3,0,0.014,28,37
+Electrolux ECM2471,freezer,freezer-sub,FALSE,0,[270],4,0,0.014,28,29
+Whirlpool AFG5336-C,freezer,freezer-sub,FALSE,0,[230],5,0,0.014,30,37
+fridge-submaster MTRZ502 tabletop,freezer,freezer-sub,FALSE,0,[90],4,0,0.014,32,37
+Argos value range tabletop freezer-sub,freezer,freezer-sub,FALSE,0,[100],3,0,0.014,38,43
+Frigidaire FV21 tall freezer-sub,freezer,freezer-sub,FALSE,0,[220],3,0,0.014,38,43
+Whirlpool AFR6326B,freezer,freezer-sub,FALSE,0,[350],4,0,0.014,38,39
+Bush BSCF 306 chest,freezer,freezer-sub,FALSE,0,[220],4,0,0.014,40,43
+Indesit RG2190,fridge,fridge-freezer-sub,TRUE,0,[150],5,0,0.014,0,11
+Bosch KGV 2620,fridge,fridge-freezer-sub,TRUE,0,[330],4,0,0.014,0,5
+Hotpoint FF64 iced diamond,fridge,fridge-freezer-sub,TRUE,0,[380],5,0,0.014,0,5
+Candy CPC 220,fridge,fridge-freezer-sub,TRUE,0,[230 230 199 199 199 199 199 199 198 198],4,0,0.014,6,15
+Candy CPCA 250K,fridge,fridge-freezer-sub,TRUE,0,[260 260 249 249 249 249 229 229],3,0,0.014,6,13
+Beko CG964,fridge,fridge-freezer-sub,TRUE,0,[240 240 239 239 239 239 239 239 238 238 238 238 230 230 230 230],4,0,0.014,12,27
+Samsung RL39WBSW,fridge,fridge-freezer-sub,TRUE,0,[420],3,0,0.014,14,15
+LG GR359-SQ,fridge,fridge-freezer-sub,TRUE,0,[320],3,0,0.014,16,17
+Samsung LargeFF,fridge,fridge-freezer-sub,TRUE,0,[1299],3,0,0.014,16,17
+Candy CPCA291FF,fridge,fridge-freezer-sub,TRUE,0,[298],3,0,0.014,18,27
+Samsung RS21N,fridge,fridge-freezer-sub,TRUE,0,[699],3,0,0.014,18,23
+Zanussi ERL6298K,fridge,fridge-freezer-sub,TRUE,0,[1024],3,0,0.014,24,29
+Hinari CFF178,fridge,fridge-freezer-sub,TRUE,0,[230],3,0,0.014,28,31
+Zanussi ZERB8441,fridge,fridge-freezer-sub,TRUE,0,[280],3,0,0.014,28,29
+Indesit BAN12NF,fridge,fridge-freezer-sub,TRUE,0,[300],3,0,0.014,30,31
+Whirlpool 20RBD3,fridge,fridge-freezer-sub,TRUE,0,[900 900 950 950 950 950 950 950],3,0,0.014,30,37
+Coolzone under counter,fridge,fridge-freezer-sub,TRUE,0,[130],3,0,0.014,32,37
+Hotpoint RF175 BP,fridge,fridge-freezer-sub,TRUE,0,[300],2,0,0.014,32,37
+fridge-submaster MTBCB 275,fridge,fridge-freezer-sub,TRUE,0,[320 320 300 300],3,0,0.014,38,43
+Hoover HCS5136,fridge,fridge-freezer-sub,TRUE,0,[300],3,0,0.014,38,39
+LG GWL207,fridge,fridge-freezer-sub,TRUE,0,[850],3,0,0.014,38,39
+Beko CDA554,fridge,fridge-freezer-sub,TRUE,0,[290],3,0,0.014,40,43
+Argos value range fridge-freezer-sub,fridge,fridge-freezer-sub,TRUE,0,[140],3,0,0.014,40,43
+LG GR-151SSF,fridge,fridge-sub,TRUE,0,[100],4,0,0.014,0,11
+Teba SBUZ01-05,fridge,fridge-sub,TRUE,0,[120 120 120 120 100 100 100 100 100 100 100 100],5,0,0.014,0,11
+Beko TLS480,fridge,fridge-sub,TRUE,0,[220 220 220 220 200 200 200 200 180 180 180 180 180 180 178 178 178 178 178 178 178 178 180 180 180 180 180 180],4,0,0.014,0,27
+Beko LSA423,fridge,fridge-sub,TRUE,0,[140 140 139 139 139 139 140 140],3,0,0.014,12,19
+Daewoo FR143WN,fridge,fridge-sub,TRUE,0,[129],4,0,0.014,12,13
+Electrolux ER6642T,fridge,fridge-sub,TRUE,0,[128],4,0,0.014,14,21
+Haier AR91,fridge,fridge-sub,TRUE,0,[95 95 89 89],4,0,0.014,20,23
+fridge-submaster MTRR602 tabletop,fridge,fridge-sub,TRUE,0,[95 95 95 95 95 95 95 95 95 95 70 70 70 70 70 70],4,0,0.014,22,37
+Electrolux ERU6470,fridge,fridge-sub,TRUE,0,[300],4,0,0.014,24,25
+Indesit GSE1601,fridge,fridge-sub,TRUE,0,[250],4,0,0.014,26,27
+Beko LA620,fridge,fridge-sub,TRUE,0,[130],3,0,0.014,26,29
+fridge-submaster MTBL140,fridge,fridge-sub,TRUE,0,[200],3,0,0.014,28,31
+Indesit SAN400,fridge,fridge-sub,TRUE,0,[230],3,0,0.014,28,29
+Lec L5526,fridge,fridge-sub,TRUE,0,[140],3,0,0.014,30,31
+Hotpoint RL150,fridge,fridge-sub,TRUE,0,[300],3,0,0.014,30,31
+Sovereign SL46,fridge,fridge-sub,TRUE,0,[120],3,0,0.014,32,37
+Hotpoint RL175,fridge,fridge-sub,TRUE,0,[370],3,0,0.014,32,37
+Argos value range tabletop fridge-sub,fridge,fridge-sub,TRUE,0,[70],4,0,0.014,38,43
+Argos value range fridge-sub,fridge,fridge-sub,TRUE,0,[110 110 100 100],3,0,0.014,38,43
+Hotpoint RLS 150,fridge,fridge-sub,TRUE,0,[450],3,0,0.014,38,43
+Servis M3510,washer,washer-sub,TRUE,0,[300],4,0,0.014,0,3
+Zanussi Sensor Cycle FLS 1186,washer,washer-sub,TRUE,0,[300],4,0,0.014,0,3
+Hotpoint WD61 Aquarius washer dryer,washer,washer-sub,TRUE,0,[380 380 380 380 349 349 338 338 328 328 328 328],8,0,0.014,0,11
+Servis M3001 Ecocare,washer,washer-sub,TRUE,0,[200],4,0,0.014,4,7
+Hoover Six Fast Iron washing machine,washer,washer-sub,TRUE,0,[380 380 370 370 370 370],3,0,0.014,4,9
+Candy 1000RPM AG100,washer,washer-sub,TRUE,0,[230],3,0,0.014,8,11
+Bosch Classixx WFL2062,washer,washer-sub,TRUE,0,[330 330 300 300],3,0,0.014,10,13
+Indesit WA125,washer,washer-sub,TRUE,0,[250],3,0,0.014,12,13
+Zanussi Aquacycle W1042,washer,washer-sub,TRUE,0,[350],6,0,0.014,12,13
+Candy AQ130,washer,washer-sub,TRUE,0,[227],3,0,0.014,14,17
+Servis M6050,washer,washer-sub,TRUE,0,[280 280 280 280 260 260 260 260 260 260],3,0,0.014,14,23
+Zanussi Jet System XC WJD1257,washer,washer-sub,TRUE,0,[429 429 399 399 399 399],5,0,0.014,14,19
+Beko WMA10,washer,washer-sub,TRUE,0,[170],3,0,0.014,18,27
+Hoover PFW137,washer,washer-sub,TRUE,0,[430 430 450 450],5,0,0.014,20,23
+Hotpoint Aquarius WF320,washer,washer-sub,TRUE,0,[320],3,0,0.014,24,25
+Hotpoint WD860,washer,washer-sub,TRUE,0,[450 450 450 450 450 450 430 430 430 430 430 430 430 430],4,0,0.014,24,37
+Servis M6702,washer,washer-sub,TRUE,0,[280 280 250 250],3,0,0.014,26,29
+Indesit W1A 111,washer,washer-sub,TRUE,0,[200],3,0,0.014,28,29
+Indesit W1B 111,washer,washer-sub,TRUE,0,[200 200 198 198 198 198 198 198],3,0,0.014,30,37
+Zanussi ZWF14280W,washer,washer-sub,TRUE,0,[330],3,0,0.014,30,31
+Servis 8.5 KG ,washer,washer-sub,TRUE,0,[300],2,0,0.014,32,37
+Beko WM5100,washer,washer-sub,TRUE,0,[190],3,0,0.014,38,39
+Hoover OPH614,washer,washer-sub,TRUE,0,[350],2,0,0.014,38,39
+Hotpoint WDD960,washer,washer-sub,TRUE,0,[520 520 530 530],4,0,0.014,38,43
+Haus HW50 -1010,washer,washer-sub,TRUE,0,[180],3,0,0.014,40,43
+10 Indesit PWE 8148,washer,washer-sub,TRUE,0,[380],3,0,0.014,40,43
+Hotpoint TDL30 Aquarius,dryer,dryer-sub,FALSE,0,[180 180 180 180 180 180 179 179 179 179],5,0,0.014,0,9
+White Knight 447 WV,dryer,dryer-sub,FALSE,0,[150 150 150 150 150 150 150 150 150 150 139 139 139 139 138 138 138 138 138 138 128 128 128 128 128 128 128 128],6,0,0.014,0,27
+Hotpoint First Edition TDL11,dryer,dryer-sub,FALSE,0,[180],5,0,0.014,0,5
+Hotpoint Ultima TDC60,dryer,dryer-sub,FALSE,0,[300],5,0,0.014,6,9
+Hotpoint Aquarius TDL32,dryer,dryer-sub,FALSE,0,[189],5,0,0.014,10,11
+Hotpoint Ultima TDC62,dryer,dryer-sub,FALSE,0,[299 299 279 279 277 277 277 277 277 277],5,0,0.014,10,19
+White Knight 382WV,dryer,dryer-sub,FALSE,0,[110 110 109 109 109 109 109 109 110 110 110 110 110 110 110 110],6,0,0.014,12,27
+Hotpoint CTD40,dryer,dryer-sub,FALSE,0,[280 280 280 280 298 298 298 298 278 278 258 258 257 257 257 257 257 257],5,0,0.014,20,37
+Beko DRVS62,dryer,dryer-sub,FALSE,0,[150],5,0,0.014,28,29
+Zanussi TD4113,dryer,dryer-sub,FALSE,0,[160],5,0,0.014,28,29
+Hotpoint CTD80,dryer,dryer-sub,FALSE,0,[240],5,0,0.014,30,31
+Hotpoint VTD00,dryer,dryer-sub,FALSE,0,[160 160 150 150 150 150 150 150],5,0,0.014,30,37
+Hotpoint VTD20,dryer,dryer-sub,FALSE,0,[180],5,0,0.014,32,37
+Hoover vision HD VHC condenser tumble dryer,dryer,dryer-sub,FALSE,0,[330],5,0,0.014,38,39
+Hotpoint TCD970 Ultima,dryer,dryer-sub,FALSE,0,[330 330 320 320],5,0,0.014,38,43
+Candy GOC 218,dryer,dryer-sub,FALSE,0,[280],5,0,0.014,38,39
+White Knight 372WV,dryer,dryer-sub,FALSE,0,[115],6,0,0.014,40,43
+Bosch WTC 84100 GB,dryer,dryer-sub,FALSE,0,[400],5,0,0.014,40,43
+Candy CD242,dishwasher,dishwasher-sub,FALSE,0,[220],5,0,0.014,0,5
+Bosch SGS3042,dishwasher,dishwasher-sub,FALSE,0,[280 280 280 280 259 259],5,0,0.014,0,5
+Zanussi DW 24 Slimline,dishwasher,dishwasher-sub,FALSE,0,[280 280 280 280 279 279],6,0,0.014,0,5
+Indesit D610,dishwasher,dishwasher-sub,FALSE,0,[188],5,0,0.014,6,9
+Hotpoint First Edition DF54,dishwasher,dishwasher-sub,FALSE,0,[280],6,0,0.014,6,9
+Zanussi DA4342 Slimline,dishwasher,dishwasher-sub,FALSE,0,[269 269 269 269 268 268 265 265],5,0,0.014,6,13
+Bosch SGS43A52,dishwasher,dishwasher-sub,FALSE,0,[300],3,0,0.014,10,13
+Indesit D167 AAA,dishwasher,dishwasher-sub,FALSE,0,[300 300 280 280 249 249],3,0,0.014,10,15
+Candy CD623,dishwasher,dishwasher-sub,FALSE,0,[270],3,0,0.014,14,19
+Zanussi DE4554 slimline,dishwasher,dishwasher-sub,FALSE,0,[280],3,0,0.014,14,17
+Hoover HD73M,dishwasher,dishwasher-sub,FALSE,0,[270],3,0,0.014,16,19
+Bosch SGS47E02,dishwasher,dishwasher-sub,FALSE,0,[390],3,0,0.014,18,19
+Beko DE3431FW,dishwasher,dishwasher-sub,FALSE,0,[180],3,0,0.014,20,23
+Bosch SGS43C12,dishwasher,dishwasher-sub,FALSE,0,[250],3,0,0.014,20,23
+Zanussi DCS12W compact,dishwasher,dishwasher-sub,FALSE,0,[200],4,0,0.014,20,23
+Beko DWD3410,dishwasher,dishwasher-sub,FALSE,0,[170],3,0,0.014,24,25
+Bosch SGS45E62,dishwasher,dishwasher-sub,FALSE,0,[350],3,0,0.014,24,27
+Bosch SGV53E03,dishwasher,dishwasher-sub,FALSE,0,[500],3,0,0.014,24,25
+Zanussi ZDF121,dishwasher,dishwasher-sub,FALSE,0,[230],3,0,0.014,26,29
+Electrolux ESL6115,dishwasher,dishwasher-sub,FALSE,0,[400],3,0,0.014,26,29
+Cookworks WP5F,dishwasher,dishwasher-sub,FALSE,0,[120],5,0,0.014,28,37
+Indesit IDL535,dishwasher,dishwasher-sub,FALSE,0,[198 198 197 197 197 197 197 197],3,0,0.014,30,37
+Indesit DI620,dishwasher,dishwasher-sub,FALSE,0,[300],4,0,0.014,30,31
+Bosch SRS45E3,dishwasher,dishwasher-sub,FALSE,0,[330],3,0,0.014,32,37
+Haus DW12EFM,dishwasher,dishwasher-sub,FALSE,0,[200],3,0,0.014,38,39
+Hotpoint FDL570,dishwasher,dishwasher-sub,FALSE,0,[350],3,0,0.014,38,39
+Bush DW5F B,dishwasher,dishwasher-sub,FALSE,0,[130],4,0,0.014,38,43
+Haus WQP12-9250G,dishwasher,dishwasher-sub,FALSE,0,[180],3,0,0.014,40,43
+Bosch SGS 45C02,dishwasher,dishwasher-sub,FALSE,0,[380],3,0,0.014,40,43
+Sanyo 14M3 14 in,TV,CRT-TV-sub,FALSE,0,[100],11,0,0.01,0,5
+Thomson 25 DG17U 25 in Nicam,TV,CRT-TV-sub,FALSE,0,[400],11,0,0.01,0,5
+Bush internet TV 14 in,TV,CRT-TV-sub,FALSE,0,[199],11,0,0.01,0,3
+Hitachi C28WF523N 28 in,TV,CRT-TV-sub,FALSE,0,[700],11,0,0.01,4,5
+Daewoo 14C4NT 14 in,TV,CRT-TV-sub,FALSE,0,[100],11,0,0.01,6,11
+Bush WS6671 28 in,TV,CRT-TV-sub,FALSE,0,[290],11,0,0.01,6,7
+Sony KV28FX65 28 in,TV,CRT-TV-sub,FALSE,0,[1100],11,0,0.01,6,7
+Thomson 25 DG17UG 25 in,TV,CRT-TV-sub,FALSE,0,[230],11,0,0.01,8,9
+Sony KV32DX40 32 in,TV,CRT-TV-sub,FALSE,0,[1300 1300 1200 1200 1100 1100 900 900 900 900],11,0,0.01,8,17
+Philips 28PT4457 28 in,TV,CRT-TV-sub,FALSE,0,[330 330 330 330 300 300 270 270 269 269],11,0,0.01,10,19
+Cassio TV970AD,TV,CRT-TV-sub,FALSE,0,[80],11,0,0.01,12,15
+Alba TV5482 14 in,TV,CRT-TV-sub,FALSE,0,[100 100 90 90 80 80],11,0,0.01,16,21
+Toshiba 42WH46P 42 in rear projection,TV,CRT-TV-sub,FALSE,0,[1100],11,0,0.01,16,19
+Philips PT4458 25 in,TV,CRT-TV-sub,FALSE,0,[219],11,0,0.01,20,21
+Wharfdale 15 in Nicam TV,TV,CRT-TV-sub,FALSE,0,[100],11,0,0.01,20,21
+Toshiba 14N21B2 14 in,TV,CRT-TV-sub,FALSE,0,[60],11,0,0.01,22,27
+Beko 32C786WNS 32 in,TV,CRT-TV-sub,FALSE,0,[300 300 250 250],11,0,0.01,22,25
+Toshiba 42PW33Q 42 in,TV,CRT-TV-sub,FALSE,0,[800],11,0,0.01,22,23
+Philips 28PW872,TV,CRT-TV-sub,FALSE,0,[350],11,0,0.01,24,25
+Bush 32 in widescreen TV,TV,CRT-TV-sub,FALSE,0,[200],11,0,0.01,26,27
+Goodmans 32 in flat digital TV,TV,CRT-TV-sub,FALSE,0,[500],11,0,0.01,26,27
+Mikomi 14 in,TV,CRT-TV-sub,FALSE,0,[50 50 49 49 45 45 45 45 45 45 70 70],11,0,0.01,28,39
+Bush 21 in flat TV,TV,CRT-TV-sub,FALSE,0,[94 94 80 80],11,0,0.01,28,31
+Bush BTV 663 DVD 28 in flat widescreen,TV,CRT-TV-sub,FALSE,0,[350],11,0,0.01,28,29
+Beko 28 in flat widescreen,TV,CRT-TV-sub,FALSE,0,[180],11,0,0.01,30,31
+JVC 28 in widescreen,TV,CRT-TV-sub,FALSE,0,[200],11,0,0.01,32,37
+Acoustic solutions 14 in TV/DVD/VCR combi,TV,CRT-TV-sub,FALSE,0,[150],11,0,0.01,32,37
+Mikomi 14 in tV with built in DVD player,TV,CRT-TV-sub,FALSE,0,[100],11,0,0.01,38,39
+Wharfdale 21 in pure flat TV,TV,CRT-TV-sub,FALSE,0,[120],11,0,0.01,38,39
+Toshiba LCD-TV,TV,LCD-TV-sub,FALSE,0,[350],11,0,0.01,18,19
+Hitachi LCD-TV,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,18,19
+Goodmans GTV30WLCD-TV,TV,LCD-TV-sub,FALSE,0,[900],11,0,0.01,18,21
+Alba ALCD-TV15 TV 15 in,TV,LCD-TV-sub,FALSE,0,[200],11,0,0.01,20,23
+Philips 15PF8946 15 in,TV,LCD-TV-sub,FALSE,0,[400],11,0,0.01,20,21
+Thomson LB125B5 widescreen,TV,LCD-TV-sub,FALSE,0,[800],11,0,0.01,22,23
+Mikomi 17 in widescreen LCD-TV,TV,LCD-TV-sub,FALSE,0,[250],11,0,0.01,22,27
+Bush 26 in high definition ready LCD-TV,TV,LCD-TV-sub,FALSE,0,[500 500 500 500 380 380 280 280 300 300 300 300 300 300],11,0,0.01,24,37
+Grundig high definition ready integrated digital LCD-TV,TV,LCD-TV-sub,FALSE,0,[800],11,0,0.01,24,27
+Wharfdale 32 in HDTV,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,28,29
+Roadstar 7 in twin tuner handheld LCD-TV,TV,LCD-TV-sub,FALSE,0,[150],11,0,0.01,28,29
+LG 32 in HD ready digital LCD-TV,TV,LCD-TV-sub,FALSE,0,[600 600 500 500 500 500 500 500],11,0,0.01,30,37
+Sony BRAVIA x-series 52 in LCD-TV DL52X200,TV,LCD-TV-sub,FALSE,0,[4000],11,0,0.01,30,31
+Sony 46 in 108OP HD digital,TV,LCD-TV-sub,FALSE,0,[2500],11,0,0.01,32,37
+Alba 19 in HD ready,TV,LCD-TV-sub,FALSE,0,[130 130 150 150],11,0,0.01,38,43
+LG LH3000 energy saving series 42 in,TV,LCD-TV-sub,FALSE,0,[800 800 680 680],11,0,0.01,38,43
+Viera TX-L42 S10 B 42 in,TV,LCD-TV-sub,FALSE,0,[900],11,0,0.01,38,39
+Sharp 40 in full HD LED LCD-TV LC40LE600,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,38,39
+Goodmans GTV42P3 42 in Plasma-TV,TV,Plasma-TV-sub,FALSE,0,[1800 1800 1300 1300],11,0,0.01,18,21
+Hitachi 42PD4200 42 in Plasma-TV,TV,Plasma-TV-sub,FALSE,0,[2500],11,0,0.01,18,21
+Samsung PS42V4 42 in,TV,Plasma-TV-sub,FALSE,0,[2000],11,0,0.01,20,21
+Goodmans GTV 42 P5,TV,Plasma-TV-sub,FALSE,0,[1000],11,0,0.01,22,25
+Goodmans XGTV5OP,TV,Plasma-TV-sub,FALSE,0,[2000],11,0,0.01,22,23
+Panasonic TH42PE50CAB,TV,Plasma-TV-sub,FALSE,0,[2300],11,0,0.01,22,23
+Bush 42 in Plasma-TV,TV,Plasma-TV-sub,FALSE,0,[900],11,0,0.01,24,25
+Hitachi 42 in 42PD3200,TV,Plasma-TV-sub,FALSE,0,[1400],11,0,0.01,24,25
+Panasonic 37 in HD Ready Digital Plasma-TV,TV,Plasma-TV-sub,FALSE,0,[900 900 750 750 750 750 750 750],11,0,0.01,30,37
+Panasonic 42 in HD Ready Digital Plasma-TV,TV,Plasma-TV-sub,FALSE,0,[1000 1000 800 800 800 800 800 800],11,0,0.01,30,37
+Panasonic 50 in HD digital Plasma-TV TV TH50PX7 PED,TV,Plasma-TV-sub,FALSE,0,[1400],11,0,0.01,30,31
+Phillips 50 in 1080p HD ready digital,TV,Plasma-TV-sub,FALSE,0,[1100],11,0,0.01,32,37
+Panasonic 100HZ HD Plasma-TV TC TX P37 X10V,TV,Plasma-TV-sub,FALSE,0,[700],11,0,0.01,38,39
+Samsung 50 in 100HZ PS50B451B2WXXU,TV,Plasma-TV-sub,FALSE,0,[950 950 880 880],11,0,0.01,38,43
+Viera 50 in TX-P50 G10B,TV,Plasma-TV-sub,FALSE,0,[1500],11,0,0.01,38,39
+LG HD ready digital Plasma-TV TV PQ2000 50 in,TV,Plasma-TV-sub,FALSE,0,[650],11,0,0.01,40,43
+Panasonic 50 in 400HZ full HD 1080p digital TXP50S10,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,40,43
+electric-cooker-2011-15-high-B,cooker,electric-cooker-sub,TRUE,0,[315],4,0,0.014,44,63
+electric-cooker-2011-15-mid-B,cooker,electric-cooker-sub,TRUE,0,[290],4,0,0.014,44,63
+electric-cooker-2011-15-low-B,cooker,electric-cooker-sub,TRUE,0,[265],4,0,0.014,44,63
+electric-cooker-2016-20-high-A,cooker,electric-cooker-sub,TRUE,0,[315],3,0,0.014,64,83
+electric-cooker-2016-20-mid-B,cooker,electric-cooker-sub,TRUE,0,[290],4,0,0.014,64,83
+electric-cooker-2016-20-low-B,cooker,electric-cooker-sub,TRUE,0,[265],4,0,0.014,64,83
+electric-cooker-2021-25-high-A,cooker,electric-cooker-sub,TRUE,0,[315],3,0,0.014,84,103
+electric-cooker-2021-25-mid-A,cooker,electric-cooker-sub,TRUE,0,[290],3,0,0.014,84,103
+electric-cooker-2021-25-low-B,cooker,electric-cooker-sub,TRUE,0,[265],4,0,0.014,84,103
+electric-cooker-2026-30-high-A,cooker,electric-cooker-sub,TRUE,0,[315],3,0,0.014,104,123
+electric-cooker-2026-30-mid-A,cooker,electric-cooker-sub,TRUE,0,[290],3,0,0.014,104,123
+electric-cooker-2026-30-low-A,cooker,electric-cooker-sub,TRUE,0,[265],3,0,0.014,104,123
+electric-cooker-2031-35-high-A+,cooker,electric-cooker-sub,TRUE,0,[315],2,0,0.014,124,143
+electric-cooker-2031-35-mid-A,cooker,electric-cooker-sub,TRUE,0,[290],3,0,0.014,124,143
+electric-cooker-2031-35-low-A,cooker,electric-cooker-sub,TRUE,0,[265],3,0,0.014,124,143
+electric-cooker-2036-40-high-A+,cooker,electric-cooker-sub,TRUE,0,[315],2,0,0.014,144,163
+electric-cooker-2036-40-mid-A+,cooker,electric-cooker-sub,TRUE,0,[290],2,0,0.014,144,163
+electric-cooker-2036-40-low-A,cooker,electric-cooker-sub,TRUE,0,[265],3,0,0.014,144,163
+electric-cooker-2041-45-high-A+,cooker,electric-cooker-sub,TRUE,0,[315],2,0,0.014,164,183
+electric-cooker-2041-45-mid-A+,cooker,electric-cooker-sub,TRUE,0,[290],2,0,0.014,164,183
+electric-cooker-2041-45-low-A+,cooker,electric-cooker-sub,TRUE,0,[265],2,0,0.014,164,183
+electric-cooker-2046-50-high-A++,cooker,electric-cooker-sub,TRUE,0,[315],1,0,0.014,184,Inf
+electric-cooker-2046-50-mid-A+,cooker,electric-cooker-sub,TRUE,0,[290],2,0,0.014,184,Inf
+electric-cooker-2046-50-low-A+,cooker,electric-cooker-sub,TRUE,0,[265],2,0,0.014,184,Inf
+chob-cooker-2011-15-high-B,cooker,chob-cooker-sub,TRUE,0,[500],4,0,0.014,44,63
+chob-cooker-2011-15-mid-B,cooker,chob-cooker-sub,TRUE,0,[355],4,0,0.014,44,63
+chob-cooker-2011-15-low-B,cooker,chob-cooker-sub,TRUE,0,[315],4,0,0.014,44,63
+chob-cooker-2016-20-high-A,cooker,chob-cooker-sub,TRUE,0,[500],3,0,0.014,64,83
+chob-cooker-2016-20-mid-B,cooker,chob-cooker-sub,TRUE,0,[355],4,0,0.014,64,83
+chob-cooker-2016-20-low-B,cooker,chob-cooker-sub,TRUE,0,[315],4,0,0.014,64,83
+chob-cooker-2021-25-high-A,cooker,chob-cooker-sub,TRUE,0,[500],3,0,0.014,84,103
+chob-cooker-2021-25-mid-A,cooker,chob-cooker-sub,TRUE,0,[355],3,0,0.014,84,103
+chob-cooker-2021-25-low-B,cooker,chob-cooker-sub,TRUE,0,[315],4,0,0.014,84,103
+chob-cooker-2026-30-high-A,cooker,chob-cooker-sub,TRUE,0,[500],3,0,0.014,104,123
+chob-cooker-2026-30-mid-A,cooker,chob-cooker-sub,TRUE,0,[355],3,0,0.014,104,123
+chob-cooker-2026-30-low-A,cooker,chob-cooker-sub,TRUE,0,[315],3,0,0.014,104,123
+chob-cooker-2031-35-high-A+,cooker,chob-cooker-sub,TRUE,0,[500],2,0,0.014,124,143
+chob-cooker-2031-35-mid-A,cooker,chob-cooker-sub,TRUE,0,[355],3,0,0.014,124,143
+chob-cooker-2031-35-low-A,cooker,chob-cooker-sub,TRUE,0,[315],3,0,0.014,124,143
+chob-cooker-2036-40-high-A+,cooker,chob-cooker-sub,TRUE,0,[500],2,0,0.014,144,163
+chob-cooker-2036-40-mid-A+,cooker,chob-cooker-sub,TRUE,0,[355],2,0,0.014,144,163
+chob-cooker-2036-40-low-A,cooker,chob-cooker-sub,TRUE,0,[315],3,0,0.014,144,163
+chob-cooker-2041-45-high-A+,cooker,chob-cooker-sub,TRUE,0,[500],2,0,0.014,164,183
+chob-cooker-2041-45-mid-A+,cooker,chob-cooker-sub,TRUE,0,[355],2,0,0.014,164,183
+chob-cooker-2041-45-low-A+,cooker,chob-cooker-sub,TRUE,0,[315],2,0,0.014,164,183
+chob-cooker-2046-50-high-A++,cooker,chob-cooker-sub,TRUE,0,[500],1,0,0.014,184,Inf
+chob-cooker-2046-50-mid-A+,cooker,chob-cooker-sub,TRUE,0,[355],2,0,0.014,184,Inf
+chob-cooker-2046-50-low-A+,cooker,chob-cooker-sub,TRUE,0,[315],2,0,0.014,184,Inf
+dual-fuel-cooker-2011-15-high-B,cooker,dual-fuel-cooker-sub,TRUE,0,[800],4,0,0.014,44,63
+dual-fuel-cooker-2011-15-mid-B,cooker,dual-fuel-cooker-sub,TRUE,0,[600],4,0,0.014,44,63
+dual-fuel-cooker-2011-15-low-B,cooker,dual-fuel-cooker-sub,TRUE,0,[469],4,0,0.014,44,63
+dual-fuel-cooker-2016-20-high-A,cooker,dual-fuel-cooker-sub,TRUE,0,[800],3,0,0.014,64,83
+dual-fuel-cooker-2016-20-mid-B,cooker,dual-fuel-cooker-sub,TRUE,0,[600],4,0,0.014,64,83
+dual-fuel-cooker-2016-20-low-B,cooker,dual-fuel-cooker-sub,TRUE,0,[469],4,0,0.014,64,83
+dual-fuel-cooker-2021-25-high-A,cooker,dual-fuel-cooker-sub,TRUE,0,[800],3,0,0.014,84,103
+dual-fuel-cooker-2021-25-mid-A,cooker,dual-fuel-cooker-sub,TRUE,0,[600],3,0,0.014,84,103
+dual-fuel-cooker-2021-25-low-B,cooker,dual-fuel-cooker-sub,TRUE,0,[469],4,0,0.014,84,103
+dual-fuel-cooker-2026-30-high-A,cooker,dual-fuel-cooker-sub,TRUE,0,[800],3,0,0.014,104,123
+dual-fuel-cooker-2026-30-mid-A,cooker,dual-fuel-cooker-sub,TRUE,0,[600],3,0,0.014,104,123
+dual-fuel-cooker-2026-30-low-A,cooker,dual-fuel-cooker-sub,TRUE,0,[469],3,0,0.014,104,123
+dual-fuel-cooker-2031-35-high-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[800],2,0,0.014,124,143
+dual-fuel-cooker-2031-35-mid-A,cooker,dual-fuel-cooker-sub,TRUE,0,[600],3,0,0.014,124,143
+dual-fuel-cooker-2031-35-low-A,cooker,dual-fuel-cooker-sub,TRUE,0,[469],3,0,0.014,124,143
+dual-fuel-cooker-2036-40-high-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[800],2,0,0.014,144,163
+dual-fuel-cooker-2036-40-mid-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[600],2,0,0.014,144,163
+dual-fuel-cooker-2036-40-low-A,cooker,dual-fuel-cooker-sub,TRUE,0,[469],3,0,0.014,144,163
+dual-fuel-cooker-2041-45-high-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[800],2,0,0.014,164,183
+dual-fuel-cooker-2041-45-mid-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[600],2,0,0.014,164,183
+dual-fuel-cooker-2041-45-low-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[469],2,0,0.014,164,183
+dual-fuel-cooker-2046-50-high-A++,cooker,dual-fuel-cooker-sub,TRUE,0,[800],1,0,0.014,184,Inf
+dual-fuel-cooker-2046-50-mid-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[600],2,0,0.014,184,Inf
+dual-fuel-cooker-2046-50-low-A+,cooker,dual-fuel-cooker-sub,TRUE,0,[469],2,0,0.014,184,Inf
+gas-cooker-2011-15-high-B,cooker,gas-cooker-sub,TRUE,0,[430],4,0,0.014,44,63
+gas-cooker-2011-15-mid-B,cooker,gas-cooker-sub,TRUE,0,[400],4,0,0.014,44,63
+gas-cooker-2011-15-low-B,cooker,gas-cooker-sub,TRUE,0,[350],4,0,0.014,44,63
+gas-cooker-2016-20-high-A,cooker,gas-cooker-sub,TRUE,0,[430],3,0,0.014,64,83
+gas-cooker-2016-20-mid-B,cooker,gas-cooker-sub,TRUE,0,[400],4,0,0.014,64,83
+gas-cooker-2016-20-low-B,cooker,gas-cooker-sub,TRUE,0,[350],4,0,0.014,64,83
+gas-cooker-2021-25-high-A,cooker,gas-cooker-sub,TRUE,0,[430],3,0,0.014,84,103
+gas-cooker-2021-25-mid-A,cooker,gas-cooker-sub,TRUE,0,[400],3,0,0.014,84,103
+gas-cooker-2021-25-low-B,cooker,gas-cooker-sub,TRUE,0,[350],4,0,0.014,84,103
+gas-cooker-2026-30-high-A,cooker,gas-cooker-sub,TRUE,0,[430],3,0,0.014,104,123
+gas-cooker-2026-30-mid-A,cooker,gas-cooker-sub,TRUE,0,[400],3,0,0.014,104,123
+gas-cooker-2026-30-low-A,cooker,gas-cooker-sub,TRUE,0,[350],3,0,0.014,104,123
+gas-cooker-2031-35-high-A+,cooker,gas-cooker-sub,TRUE,0,[430],2,0,0.014,124,143
+gas-cooker-2031-35-mid-A,cooker,gas-cooker-sub,TRUE,0,[400],3,0,0.014,124,143
+gas-cooker-2031-35-low-A,cooker,gas-cooker-sub,TRUE,0,[350],3,0,0.014,124,143
+gas-cooker-2036-40-high-A+,cooker,gas-cooker-sub,TRUE,0,[430],2,0,0.014,144,163
+gas-cooker-2036-40-mid-A+,cooker,gas-cooker-sub,TRUE,0,[400],2,0,0.014,144,163
+gas-cooker-2036-40-low-A,cooker,gas-cooker-sub,TRUE,0,[350],3,0,0.014,144,163
+gas-cooker-2041-45-high-A+,cooker,gas-cooker-sub,TRUE,0,[430],2,0,0.014,164,183
+gas-cooker-2041-45-mid-A+,cooker,gas-cooker-sub,TRUE,0,[400],2,0,0.014,164,183
+gas-cooker-2041-45-low-A+,cooker,gas-cooker-sub,TRUE,0,[350],2,0,0.014,164,183
+gas-cooker-2046-50-high-A++,cooker,gas-cooker-sub,TRUE,0,[430],1,0,0.014,184,Inf
+gas-cooker-2046-50-mid-A+,cooker,gas-cooker-sub,TRUE,0,[400],2,0,0.014,184,Inf
+gas-cooker-2046-50-low-A+,cooker,gas-cooker-sub,TRUE,0,[350],2,0,0.014,184,Inf
+freezer-2011-15-high-A,freezer,freezer-sub,FALSE,0,[230],3,0,0.014,44,63
+freezer-2011-15-mid-A,freezer,freezer-sub,FALSE,0,[220],3,0,0.014,44,63
+freezer-2011-15-low-B,freezer,freezer-sub,FALSE,0,[200],4,0,0.014,44,63
+freezer-2016-20-high-A,freezer,freezer-sub,FALSE,0,[230],3,0,0.014,64,83
+freezer-2016-20-mid-A,freezer,freezer-sub,FALSE,0,[220],3,0,0.014,64,83
+freezer-2016-20-low-A,freezer,freezer-sub,FALSE,0,[200],3,0,0.014,64,83
+freezer-2021-25-high-A+,freezer,freezer-sub,FALSE,0,[230],2,0,0.014,84,103
+freezer-2021-25-mid-A,freezer,freezer-sub,FALSE,0,[220],3,0,0.014,84,103
+freezer-2021-25-low-A,freezer,freezer-sub,FALSE,0,[200],3,0,0.014,84,103
+freezer-2026-30-high-A+,freezer,freezer-sub,FALSE,0,[230],2,0,0.014,104,123
+freezer-2026-30-mid-A+,freezer,freezer-sub,FALSE,0,[220],2,0,0.014,104,123
+freezer-2026-30-low-A,freezer,freezer-sub,FALSE,0,[200],3,0,0.014,104,123
+freezer-2031-35-high-A+,freezer,freezer-sub,FALSE,0,[230],2,0,0.014,124,143
+freezer-2031-35-mid-A+,freezer,freezer-sub,FALSE,0,[220],2,0,0.014,124,143
+freezer-2031-35-low-A+,freezer,freezer-sub,FALSE,0,[200],2,0,0.014,124,143
+freezer-2036-40-high-A++,freezer,freezer-sub,FALSE,0,[230],1,0,0.014,144,163
+freezer-2036-40-mid-A+,freezer,freezer-sub,FALSE,0,[220],2,0,0.014,144,163
+freezer-2036-40-low-A+,freezer,freezer-sub,FALSE,0,[200],2,0,0.014,144,163
+freezer-2041-45-high-A++,freezer,freezer-sub,FALSE,0,[230],1,0,0.014,164,183
+freezer-2041-45-mid-A++,freezer,freezer-sub,FALSE,0,[220],1,0,0.014,164,183
+freezer-2041-45-low-A+,freezer,freezer-sub,FALSE,0,[200],2,0,0.014,164,183
+freezer-2046-50-high-A++,freezer,freezer-sub,FALSE,0,[230],1,0,0.014,184,Inf
+freezer-2046-50-mid-A++,freezer,freezer-sub,FALSE,0,[220],1,0,0.014,184,Inf
+freezer-2046-50-low-A++,freezer,freezer-sub,FALSE,0,[200],1,0,0.014,184,Inf
+fridge-freezer-2011-15-high-A,fridge,fridge-freezer-sub,TRUE,0,[230],3,0,0.014,44,63
+fridge-freezer-2011-15-mid-A,fridge,fridge-freezer-sub,TRUE,0,[220],3,0,0.014,44,63
+fridge-freezer-2011-15-low-A,fridge,fridge-freezer-sub,TRUE,0,[200],3,0,0.014,44,63
+fridge-freezer-2016-20-high-A+,fridge,fridge-freezer-sub,TRUE,0,[230],2,0,0.014,64,83
+fridge-freezer-2016-20-mid-A,fridge,fridge-freezer-sub,TRUE,0,[220],3,0,0.014,64,83
+fridge-freezer-2016-20-low-A,fridge,fridge-freezer-sub,TRUE,0,[200],3,0,0.014,64,83
+fridge-freezer-2021-25-high-A+,fridge,fridge-freezer-sub,TRUE,0,[230],2,0,0.014,84,103
+fridge-freezer-2021-25-mid-A+,fridge,fridge-freezer-sub,TRUE,0,[220],2,0,0.014,84,103
+fridge-freezer-2021-25-low-A,fridge,fridge-freezer-sub,TRUE,0,[200],3,0,0.014,84,103
+fridge-freezer-2026-30-high-A+,fridge,fridge-freezer-sub,TRUE,0,[230],2,0,0.014,104,123
+fridge-freezer-2026-30-mid-A+,fridge,fridge-freezer-sub,TRUE,0,[220],2,0,0.014,104,123
+fridge-freezer-2026-30-low-A+,fridge,fridge-freezer-sub,TRUE,0,[200],2,0,0.014,104,123
+fridge-freezer-2031-35-high-A++,fridge,fridge-freezer-sub,TRUE,0,[230],1,0,0.014,124,143
+fridge-freezer-2031-35-mid-A+,fridge,fridge-freezer-sub,TRUE,0,[220],2,0,0.014,124,143
+fridge-freezer-2031-35-low-A+,fridge,fridge-freezer-sub,TRUE,0,[200],2,0,0.014,124,143
+fridge-freezer-2036-40-high-A++,fridge,fridge-freezer-sub,TRUE,0,[230],1,0,0.014,144,163
+fridge-freezer-2036-40-mid-A++,fridge,fridge-freezer-sub,TRUE,0,[220],1,0,0.014,144,163
+fridge-freezer-2036-40-low-A+,fridge,fridge-freezer-sub,TRUE,0,[200],2,0,0.014,144,163
+fridge-freezer-2041-45-high-A++,fridge,fridge-freezer-sub,TRUE,0,[230],1,0,0.014,164,183
+fridge-freezer-2041-45-mid-A++,fridge,fridge-freezer-sub,TRUE,0,[220],1,0,0.014,164,183
+fridge-freezer-2041-45-low-A++,fridge,fridge-freezer-sub,TRUE,0,[200],1,0,0.014,164,183
+fridge-freezer-2046-50-high-A+++,fridge,fridge-freezer-sub,TRUE,0,[230],0,0,0.014,184,Inf
+fridge-freezer-2046-50-mid-A++,fridge,fridge-freezer-sub,TRUE,0,[220],1,0,0.014,184,Inf
+fridge-freezer-2046-50-low-A++,fridge,fridge-freezer-sub,TRUE,0,[200],1,0,0.014,184,Inf
+fridge-2011-15-high-A,fridge,fridge-sub,TRUE,0,[265],3,0,0.014,44,63
+fridge-2011-15-mid-A,fridge,fridge-sub,TRUE,0,[140],3,0,0.014,44,63
+fridge-2011-15-low-B,fridge,fridge-sub,TRUE,0,[110],4,0,0.014,44,63
+fridge-2016-20-high-A,fridge,fridge-sub,TRUE,0,[265],3,0,0.014,64,83
+fridge-2016-20-mid-A,fridge,fridge-sub,TRUE,0,[140],3,0,0.014,64,83
+fridge-2016-20-low-A,fridge,fridge-sub,TRUE,0,[110],3,0,0.014,64,83
+fridge-2021-25-high-A+,fridge,fridge-sub,TRUE,0,[265],2,0,0.014,84,103
+fridge-2021-25-mid-A,fridge,fridge-sub,TRUE,0,[140],3,0,0.014,84,103
+fridge-2021-25-low-A,fridge,fridge-sub,TRUE,0,[110],3,0,0.014,84,103
+fridge-2026-30-high-A+,fridge,fridge-sub,TRUE,0,[265],2,0,0.014,104,123
+fridge-2026-30-mid-A+,fridge,fridge-sub,TRUE,0,[140],2,0,0.014,104,123
+fridge-2026-30-low-A,fridge,fridge-sub,TRUE,0,[110],3,0,0.014,104,123
+fridge-2031-35-high-A+,fridge,fridge-sub,TRUE,0,[265],2,0,0.014,144,143
+fridge-2031-35-mid-A+,fridge,fridge-sub,TRUE,0,[140],2,0,0.014,144,143
+fridge-2031-35-low-A+,fridge,fridge-sub,TRUE,0,[110],2,0,0.014,144,143
+fridge-2036-40-high-A++,fridge,fridge-sub,TRUE,0,[265],1,0,0.014,144,163
+fridge-2036-40-mid-A+,fridge,fridge-sub,TRUE,0,[140],2,0,0.014,144,163
+fridge-2036-40-low-A+,fridge,fridge-sub,TRUE,0,[110],2,0,0.014,144,163
+fridge-2041-45-high-A++,fridge,fridge-sub,TRUE,0,[265],1,0,0.014,164,183
+fridge-2041-45-mid-A++,fridge,fridge-sub,TRUE,0,[140],1,0,0.014,164,183
+fridge-2041-45-low-A+,fridge,fridge-sub,TRUE,0,[110],2,0,0.014,164,183
+fridge-2046-50-high-A++,fridge,fridge-sub,TRUE,0,[265],1,0,0.014,184,Inf
+fridge-2046-50-mid-A++,fridge,fridge-sub,TRUE,0,[140],1,0,0.014,184,Inf
+fridge-2046-50-low-A++,fridge,fridge-sub,TRUE,0,[110],1,0,0.014,184,Inf
+washer-2011-15-high-A,washer,washer-sub,TRUE,0,[365],3,0,0.014,44,63
+washer-2011-15-mid-A,washer,washer-sub,TRUE,0,[300],3,0,0.014,44,63
+washer-2011-15-low-B,washer,washer-sub,TRUE,0,[199],4,0,0.014,44,63
+washer-2016-20-high-A,washer,washer-sub,TRUE,0,[365],3,0,0.014,64,83
+washer-2016-20-mid-A,washer,washer-sub,TRUE,0,[300],3,0,0.014,64,83
+washer-2016-20-low-A,washer,washer-sub,TRUE,0,[199],3,0,0.014,64,83
+washer-2021-25-high-A+,washer,washer-sub,TRUE,0,[365],2,0,0.014,84,103
+washer-2021-25-mid-A,washer,washer-sub,TRUE,0,[300],3,0,0.014,84,103
+washer-2021-25-low-A,washer,washer-sub,TRUE,0,[199],3,0,0.014,84,103
+washer-2026-30-high-A+,washer,washer-sub,TRUE,0,[365],2,0,0.014,104,123
+washer-2026-30-mid-A+,washer,washer-sub,TRUE,0,[300],2,0,0.014,104,123
+washer-2026-30-low-A,washer,washer-sub,TRUE,0,[199],3,0,0.014,104,123
+washer-2031-35-high-A+,washer,washer-sub,TRUE,0,[365],2,0,0.014,124,143
+washer-2031-35-mid-A+,washer,washer-sub,TRUE,0,[300],2,0,0.014,124,143
+washer-2031-35-low-A+,washer,washer-sub,TRUE,0,[199],2,0,0.014,124,143
+washer-2036-40-high-A++,washer,washer-sub,TRUE,0,[365],1,0,0.014,144,163
+washer-2036-40-mid-A+,washer,washer-sub,TRUE,0,[300],2,0,0.014,144,163
+washer-2036-40-low-A+,washer,washer-sub,TRUE,0,[199],2,0,0.014,144,163
+washer-2041-45-high-A++,washer,washer-sub,TRUE,0,[365],1,0,0.014,164,183
+washer-2041-45-mid-A++,washer,washer-sub,TRUE,0,[300],1,0,0.014,164,183
+washer-2041-45-low-A+,washer,washer-sub,TRUE,0,[199],2,0,0.014,164,183
+washer-2046-50-high-A++,washer,washer-sub,TRUE,0,[365],1,0,0.014,184,Inf
+washer-2046-50-mid-A++,washer,washer-sub,TRUE,0,[300],1,0,0.014,184,Inf
+washer-2046-50-low-A++,washer,washer-sub,TRUE,0,[199],1,0,0.014,184,Inf
+dryer-2011-15-high-C,dryer,dryer-sub,FALSE,0,[300],5,0,0.014,44,63
+dryer-2011-15-mid-C,dryer,dryer-sub,FALSE,0,[257],5,0,0.014,44,63
+dryer-2011-15-low-C,dryer,dryer-sub,FALSE,0,[155],5,0,0.014,44,63
+dryer-2016-20-high-B,dryer,dryer-sub,FALSE,0,[300],4,0,0.014,64,83
+dryer-2016-20-mid-C,dryer,dryer-sub,FALSE,0,[257],5,0,0.014,64,83
+dryer-2016-20-low-C,dryer,dryer-sub,FALSE,0,[155],5,0,0.014,64,83
+dryer-2021-25-high-B,dryer,dryer-sub,FALSE,0,[300],4,0,0.014,84,103
+dryer-2021-25-mid-B,dryer,dryer-sub,FALSE,0,[257],4,0,0.014,84,103
+dryer-2021-25-low-C,dryer,dryer-sub,FALSE,0,[155],5,0,0.014,84,103
+dryer-2026-30-high-B,dryer,dryer-sub,FALSE,0,[300],4,0,0.014,104,123
+dryer-2026-30-mid-B,dryer,dryer-sub,FALSE,0,[257],4,0,0.014,104,123
+dryer-2026-30-low-B,dryer,dryer-sub,FALSE,0,[155],4,0,0.014,104,123
+dryer-2031-35-high-A,dryer,dryer-sub,FALSE,0,[300],3,0,0.014,124,143
+dryer-2031-35-mid-B,dryer,dryer-sub,FALSE,0,[257],4,0,0.014,124,143
+dryer-2031-35-low-B,dryer,dryer-sub,FALSE,0,[155],4,0,0.014,124,143
+dryer-2036-40-high-A,dryer,dryer-sub,FALSE,0,[300],3,0,0.014,144,163
+dryer-2036-40-mid-A,dryer,dryer-sub,FALSE,0,[257],3,0,0.014,144,163
+dryer-2036-40-low-B,dryer,dryer-sub,FALSE,0,[155],4,0,0.014,144,163
+dryer-2041-45-high-A,dryer,dryer-sub,FALSE,0,[300],3,0,0.014,164,183
+dryer-2041-45-mid-A,dryer,dryer-sub,FALSE,0,[257],3,0,0.014,164,183
+dryer-2041-45-low-A,dryer,dryer-sub,FALSE,0,[155],3,0,0.014,164,183
+dryer-2046-50-high-A+,dryer,dryer-sub,FALSE,0,[300],2,0,0.014,184,Inf
+dryer-2046-50-mid-A,dryer,dryer-sub,FALSE,0,[257],3,0,0.014,184,Inf
+dryer-2046-50-low-A,dryer,dryer-sub,FALSE,0,[155],3,0,0.014,184,Inf
+dishwasher-2011-15-high-A,dishwasher,dishwasher-sub,FALSE,0,[340],3,0,0.014,44,63
+dishwasher-2011-15-mid-A,dishwasher,dishwasher-sub,FALSE,0,[230],3,0,0.014,44,63
+dishwasher-2011-15-low-A,dishwasher,dishwasher-sub,FALSE,0,[189],3,0,0.014,44,63
+dishwasher-2016-20-high-A+,dishwasher,dishwasher-sub,FALSE,0,[340],2,0,0.014,64,83
+dishwasher-2016-20-mid-A,dishwasher,dishwasher-sub,FALSE,0,[230],3,0,0.014,64,83
+dishwasher-2016-20-low-A,dishwasher,dishwasher-sub,FALSE,0,[189],3,0,0.014,64,83
+dishwasher-2021-25-high-A+,dishwasher,dishwasher-sub,FALSE,0,[340],2,0,0.014,84,103
+dishwasher-2021-25-mid-A+,dishwasher,dishwasher-sub,FALSE,0,[230],2,0,0.014,84,103
+dishwasher-2021-25-low-A,dishwasher,dishwasher-sub,FALSE,0,[189],3,0,0.014,84,103
+dishwasher-2026-30-high-A+,dishwasher,dishwasher-sub,FALSE,0,[340],2,0,0.014,104,123
+dishwasher-2026-30-mid-A+,dishwasher,dishwasher-sub,FALSE,0,[230],2,0,0.014,104,123
+dishwasher-2026-30-low-A+,dishwasher,dishwasher-sub,FALSE,0,[189],2,0,0.014,104,123
+dishwasher-2031-35-high-A++,dishwasher,dishwasher-sub,FALSE,0,[340],1,0,0.014,124,143
+dishwasher-2031-35-mid-A+,dishwasher,dishwasher-sub,FALSE,0,[230],2,0,0.014,124,143
+dishwasher-2031-35-low-A+,dishwasher,dishwasher-sub,FALSE,0,[189],2,0,0.014,124,143
+dishwasher-2036-40-high-A++,dishwasher,dishwasher-sub,FALSE,0,[340],1,0,0.014,144,163
+dishwasher-2036-40-mid-A++,dishwasher,dishwasher-sub,FALSE,0,[230],1,0,0.014,144,163
+dishwasher-2036-40-low-A+,dishwasher,dishwasher-sub,FALSE,0,[189],2,0,0.014,144,163
+dishwasher-2041-45-high-A++,dishwasher,dishwasher-sub,FALSE,0,[340],1,0,0.014,164,183
+dishwasher-2041-45-mid-A++,dishwasher,dishwasher-sub,FALSE,0,[230],1,0,0.014,164,183
+dishwasher-2041-45-low-A++,dishwasher,dishwasher-sub,FALSE,0,[189],1,0,0.014,164,183
+dishwasher-2046-50-high-A+++,dishwasher,dishwasher-sub,FALSE,0,[340],0,0,0.014,184,Inf
+dishwasher-2046-50-mid-A++,dishwasher,dishwasher-sub,FALSE,0,[230],1,0,0.014,184,Inf
+dishwasher-2046-50-low-A++,dishwasher,dishwasher-sub,FALSE,0,[189],1,0,0.014,184,Inf
+LCD-2011-15-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,44,63
+LCD-2011-15-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,44,63
+LCD-2011-15-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,44,63
+LCD-2016-20-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,64,83
+LCD-2016-20-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,64,83
+LCD-2016-20-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,64,83
+LCD-2021-25-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,84,103
+LCD-2021-25-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,84,103
+LCD-2021-25-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,84,103
+LCD-2026-30-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,104,123
+LCD-2026-30-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,104,123
+LCD-2026-30-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,104,123
+LCD-2031-35-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,124,143
+LCD-2031-35-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,124,143
+LCD-2031-35-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,124,143
+LCD-2036-40-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,144,163
+LCD-2036-40-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,144,163
+LCD-2036-40-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,144,163
+LCD-2041-45-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,164,183
+LCD-2041-45-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,164,183
+LCD-2041-45-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,164,183
+LCD-2046-50-large,TV,LCD-TV-sub,FALSE,0,[1000],11,0,0.01,184,Inf
+LCD-2046-50-mid,TV,LCD-TV-sub,FALSE,0,[500],11,0,0.01,184,Inf
+LCD-2046-50-small,TV,LCD-TV-sub,FALSE,0,[300],11,0,0.01,184,Inf
+Plasma-2011-15-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,44,63
+Plasma-2011-15-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,44,63
+Plasma-2011-15-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,44,63
+Plasma-2016-20-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,64,83
+Plasma-2016-20-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,64,83
+Plasma-2016-20-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,64,83
+Plasma-2021-25-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,84,103
+Plasma-2021-25-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,84,103
+Plasma-2021-25-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,84,103
+Plasma-2026-30-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,104,123
+Plasma-2026-30-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,104,123
+Plasma-2026-30-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,104,123
+Plasma-2031-35-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,124,143
+Plasma-2031-35-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,124,143
+Plasma-2031-35-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,124,143
+Plasma-2036-40-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,144,163
+Plasma-2036-40-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,144,163
+Plasma-2036-40-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,144,163
+Plasma-2041-45-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,164,183
+Plasma-2041-45-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,164,183
+Plasma-2041-45-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,164,183
+Plasma-2046-50-large,TV,Plasma-TV-sub,FALSE,0,[1200],11,0,0.01,184,Inf
+Plasma-2046-50-mid,TV,Plasma-TV-sub,FALSE,0,[880],11,0,0.01,184,Inf
+Plasma-2046-50-small,TV,Plasma-TV-sub,FALSE,0,[750],11,0,0.01,184,Inf

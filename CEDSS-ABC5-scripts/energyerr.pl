@@ -399,11 +399,11 @@ for(my $i = 0; $i <= $#pdata; $i++) {
   for(my $j = 0; $j <= $#ehead; $j++) {
     print ",";
 
-    if(defined($edata[$i]->{$ehead[$j]})) {
+    if(defined($edata[$i]->{$ehead[$j]}) && $calib{$ehead[$j]} > 0) {
       print ($edata[$i]->{$ehead[$j]} / $calib{$ehead[$j]});
     }
     else {
-      print 'NA';		# Shouldn't happen!
+      print 'NA';		# Will happen if the calibration data is 0!
     }
   }
 

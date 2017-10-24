@@ -16,6 +16,10 @@
 # 5. When rural calibration file is used, rural data are selected from the
 #    questionnaire data file
 # 6. Added option to clean up
+#
+# Revised June and July 2017
+#
+# Modified to cope with split sample runs
 
 use strict;
 
@@ -56,12 +60,12 @@ my %paramRerr = ('biospheric.boost.factor' => 'bioboost',
 		 'visits.per.step' => 'visits');
 
 my %split = ('split1U'
-	     => [['ERROR split1Uerror.csv',
+	     => [['ERROR cedss3.4-Urban1-energy-match-totals.csv',
 		  'PATCH script-patch-Urban1-20170406.csv',
 		  'DWELLAPP dwellings-appliances-Filtered-Urban1-20170407.csv',
 		  'DWELLINGS script-dwellings-Urban1-20170407.csv']],
 	     'split2U'
-	     => [['ERROR split2Uerror.csv',
+	     => [['ERROR cedss3.4-Urban2-energy-match-totals.csv',
 		  'PATCH script-patch-Urban2-20170406.csv',
 		  'DWELLAPP dwellings-appliances-Filtered-Urban2-20170407.csv',
 		  'DWELLINGS script-dwellings-Urban2-20170407.csv']],
