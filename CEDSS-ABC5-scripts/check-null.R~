@@ -1,0 +1,270 @@
+#!/usr/bin/env Rscript
+#
+# R script to check 'nullness' of runs
+
+args <- commandArgs(T)
+
+data <- read.csv(args[1])
+
+steps = 44
+
+# The results file should have the following columns for parameters:
+#
+# bioboost
+# biospherism1,biospherism2
+# boostceil (never nulled on its own)
+# credit (not nulled under "all")
+# egoism1,egoism2 (not nulled under "all")
+# frame1,frame2
+# habitadjust
+# hedonism1,hedonism2 (not nulled under "all")
+# maxlinks,newsubcatapp,newsubcatstep,visits
+#   N.B. newsubcatapp is set to 1 in null mode
+#   N.B. newsubcatstep is set to 1 + number of steps (44 by default)
+# planning1,planning2 (not nulled under "all")
+
+null0 <- c("bioboost", "biospherism1", "biospherism2", "boostceil",
+           "credit", "egoism1", "egoism2", "frame1", "frame2", "habitadjust",
+	   "hedonism1", "hedonism2", "maxlinks", "visits", "planning1",
+	   "planning2")
+
+for(i in 1:length(null0)) {
+  newname <- paste("null", null0[i], sep = ".")
+  data[newname] <- (data[null0[i]] == 0)
+}
+
+data$null.newsubcatapp <- (data$newsubcatstep == 1)
+data$null.newsubcatstep <- (data$newsubcatstep == steps + 1)
+
+data$bioboost.null <- (data$null.bioboost && !(data$null.biospherism1
+		      			       || data$null.biospherism2
+					       || data$null.boostceil
+					       || data$null.credit
+					       || data$null.egoism1
+					       || data$null.egoism2
+					       || data$null.frame1
+					       || data$null.frame2
+					       || data$null.habitadjust
+					       || data$null.hedonism1
+					       || data$null.hedonism2
+					       || data$null.maxlinks
+					       || data$null.newsubcatapp
+					       || data$null.newsubcatstep
+					       || data$null.visits
+					       || data$null.planning1
+					       || data$null.planning2))
+
+data$biospherism.null <- (data$null.biospherism1
+		          && data$null.biospherism2
+			   && !(data$null.bioboost
+				|| data$null.boostceil
+				|| data$null.credit
+				|| data$null.egoism1
+				|| data$null.egoism2
+				|| data$null.frame1
+				|| data$null.frame2
+				|| data$null.habitadjust
+				|| data$null.hedonism1
+				|| data$null.hedonism2
+				|| data$null.maxlinks
+				|| data$null.newsubcatapp
+				|| data$null.newsubcatstep
+				|| data$null.visits
+				|| data$null.planning1
+				|| data$null.planning2))
+
+data$credit.null <- (data$null.credit && !(data$null.biospherism1
+		      			   || data$null.biospherism2
+					   || data$null.boostceil
+					   || data$null.bioboost
+					   || data$null.egoism1
+					   || data$null.egoism2
+					   || data$null.frame1
+					   || data$null.frame2
+					   || data$null.habitadjust
+					   || data$null.hedonism1
+					   || data$null.hedonism2
+					   || data$null.maxlinks
+					   || data$null.newsubcatapp
+					   || data$null.newsubcatstep
+					   || data$null.visits
+					   || data$null.planning1
+					   || data$null.planning2))
+
+data$egoism.null <- (data$null.egoism1
+		     && data$null.egoism2
+		     && !(data$null.bioboost
+		          || data$null.boostceil
+			  || data$null.credit
+			  || data$null.biospherism1
+			  || data$null.biospherism2
+			  || data$null.frame1
+			  || data$null.frame2
+			  || data$null.habitadjust
+			  || data$null.hedonism1
+			  || data$null.hedonism2
+			  || data$null.maxlinks
+			  || data$null.newsubcatapp
+			  || data$null.newsubcatstep
+			  || data$null.visits
+			  || data$null.planning1
+			  || data$null.planning2))
+
+data$frame.null <- (data$null.frame1
+		    && data$null.frame2
+		    && !(data$null.bioboost
+		         || data$null.boostceil
+			 || data$null.credit
+			 || data$null.biospherism1
+			 || data$null.biospherism2
+			 || data$null.egoism1
+			 || data$null.egoism2
+			 || data$null.habitadjust
+			 || data$null.hedonism1
+			 || data$null.hedonism2
+			 || data$null.maxlinks
+			 || data$null.newsubcatapp
+			 || data$null.newsubcatstep
+			 || data$null.visits
+			 || data$null.planning1
+			 || data$null.planning2))
+
+data$habitadjust.null <- (data$null.habitadjust && !(data$null.biospherism1
+		      			             || data$null.biospherism2
+					       	     || data$null.boostceil
+					       	     || data$null.credit
+					       	     || data$null.egoism1
+					       	     || data$null.egoism2
+					       	     || data$null.frame1
+					       	     || data$null.frame2
+					       	     || data$null.bioboost
+					       	     || data$null.hedonism1
+					       	     || data$null.hedonism2
+					       	     || data$null.maxlinks
+					       	     || data$null.newsubcatapp
+					       	     || data$null.newsubcatstep
+					       	     || data$null.visits
+					       	     || data$null.planning1
+					       	     || data$null.planning2))
+
+data$hedonism.null <- (data$null.hedonism1
+		       && data$null.hedonism2
+		       && !(data$null.bioboost
+			    || data$null.boostceil
+			    || data$null.credit
+			    || data$null.egoism1
+			    || data$null.egoism2
+			    || data$null.frame1
+			    || data$null.frame2
+			    || data$null.habitadjust
+			    || data$null.biospherism1
+			    || data$null.biospherism2
+			    || data$null.maxlinks
+			    || data$null.newsubcatapp
+			    || data$null.newsubcatstep
+			    || data$null.visits
+			    || data$null.planning1
+			    || data$null.planning2))
+
+data$maxlinks.null <- (data$null.maxlinks
+		       && data$null.newsubcatapp
+		       && data$null.newsubcatstep
+		       && data$null.visits
+		       && !(data$null.bioboost
+		       	    || data$null.boostceil
+			    || data$null.credit
+			    || data$null.egoism1
+			    || data$null.egoism2
+			    || data$null.frame1
+			    || data$null.frame2
+			    || data$null.habitadjust
+			    || data$null.hedonism1
+			    || data$null.hedonism2
+			    || data$null.biospherism1
+			    || data$null.biospherism2
+			    || data$null.planning1
+			    || data$null.planning2))
+
+data$planning.null <- (data$null.planning1
+		       && data$null.planning2
+		       && !(data$null.bioboost
+		       	    || data$null.boostceil
+			    || data$null.credit
+			    || data$null.egoism1
+			    || data$null.egoism2
+			    || data$null.frame1
+			    || data$null.frame2
+			    || data$null.habitadjust
+			    || data$null.hedonism1
+			    || data$null.hedonism2
+			    || data$null.maxlinks
+			    || data$null.newsubcatapp
+			    || data$null.newsubcatstep
+			    || data$null.visits
+			    || data$null.biospherism1
+			    || data$null.biospherism2))
+
+data$all.null <- (data$null.bioboost
+		  && data$null.biospherism1
+		  && data$null.biospherism2
+		  && data$null.boostceil
+		  && data$null.frame1
+		  && data$null.frame2
+		  && data$null.habitadjust
+		  && data$null.maxlinks
+		  && data$null.newsubcatapp
+		  && data$null.newsubcatstep
+		  && data$null.visits
+		  && !(data$null.credit
+		       || data$null.egoism1
+		       || data$null.egoism2
+		       || data$null.hedonism1
+		       || data$null.hedonism2
+		       || data$null.planning1
+		       || data$null.planning2))
+
+data$none.null <- (!(data$null.bioboost
+	             || data$null.biospherism1
+		     || data$null.biospherism2
+		     || data$null.boostceil
+		     || data$null.credit
+		     || data$null.egoism1
+		     || data$null.egoism2
+		     || data$null.frame1
+		     || data$null.frame2
+		     || data$null.habitadjust
+		     || data$null.maxlinks
+		     || data$null.newsubcatapp
+		     || data$null.newsubcatstep
+		     || data$null.planning1
+		     || data$null.planning2
+		     || data$null.visits))
+
+data$invalid.null <- (!(data$bioboost.null
+		        || data$biospherism.null
+			|| data$credit.null
+			|| data$egoism.null
+			|| data$frame.null
+			|| data$habitadjust.null
+			|| data$hedonism.null
+			|| data$maxlinks.null
+			|| data$planning.null
+			|| data$all.null
+			|| data$none.null))
+
+cat("Null summary for file: ", args[1], "\n")
+cat("             All null: ", length(which(data$all.null)), "\n")
+cat("            None null: ", length(which(data$none.null)), "\n")
+cat("        Bioboost null: ", length(which(data$bioboost.null)), "\n")
+cat("     Biospherism null: ", length(which(data$biospherism.null)), "\n")
+cat("          Credit null: ", length(which(data$credit.null)), "\n")
+cat("          Egoism null: ", length(which(data$egoism.null)), "\n")
+cat("           Frame null: ", length(which(data$frame.null)), "\n")
+cat("     Habitadjust null: ", length(which(data$habitadjust.null)), "\n")
+cat("        Hedonism null: ", length(which(data$hedonism.null)), "\n")
+cat("        Maxlinks null: ", length(which(data$maxlinks.null)), "\n")
+cat("        Planning null: ", length(which(data$planning.null)), "\n")
+cat("    Null mode invalid: ", length(which(data$invalid.null)), "\n")
+cat("           Total runs: ", nrow(data), "\n")
+
+q(status = 0)

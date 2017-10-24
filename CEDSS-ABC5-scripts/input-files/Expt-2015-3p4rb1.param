@@ -1,0 +1,14 @@
+biospheric-boost-ceiling 1000
+biospheric-boost-factor 0
+credit-multiple-limit -20
+habit-adjustment-factor 0.2
+max-links 8
+new-subcategory-appliances-per-step 0
+new-subcategory-steps	8
+reciprocal-adjustment true
+visits-per-step 1
+external-influences-file null
+triggers-file triggers-20141214.csv
+household-file cedss3.4-households-Urban-20141129-plan8.csv
+maximum-in-category-file cedss3.3-maximum-in-category-20141207.csv
+social-link-matrix-file cedss3.3-slm-20120325full.csv

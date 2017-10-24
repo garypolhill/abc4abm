@@ -1,0 +1,9 @@
+type,unit,kWh
+space-heating-elect,sh-elect-kWh,1
+water-heating-elect,wh-elect-kWh,1
+appliance-elect,ap-elect-kWh,1
+space-heating-gas,sh-gas-kWh,1
+water-heating-gas,wh-gas-kWh,1
+appliance-gas,ap-gas-kWh,1
+space-heating-oil,sh-oil-kWh,1
+water-heating-oil,wh-oil-kWh,1
