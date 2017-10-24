@@ -1,0 +1,3 @@
+# abc4abm
+This repository contains scripts for use with work for the adoption of multicriteria Approximate Bayesian Computation in the calibration and validation of agent-based models.
+The directories CEDSS-ABC*-scripts contain scripts and input files used in initial work with the CEDSS model (see http://jasss.soc.surrey.ac.uk/20/3/11.html). This proof-of-concept work involved making multiple random samples uniformly in the parameter space. ABC4: Initial set of runs using all features of CEDSS studied. ABC6: Further runs switching off various (combinations of) features. ABC5: Paired runs using a split urban data sample and switching on/off combinations of features. Note that the runs in ABC6 were supposed to have been done in ABC4, but weren't due to a bug.
