@@ -96,6 +96,7 @@ class BruteABC:
         self.moments = 1.0 * np.zeros_like(self.calibvals)
         self.optscales = 1.0 * np.ones_like(self.calibvals)
         self.logoptscales = 1.0 * np.ones_like(self.calibvals)
+        self.scales_computed = False
 
         for i in range(eptsteps + 1)
             for j in range(self.n_metrics)
@@ -111,9 +112,100 @@ class BruteABC:
                     self.logmoments[j]
                         = self.logmoments[j] + self.logevidences[j][i] * self.epsilons[i]
 
+    def saveEvidences(file_name: str):
+        pass
+
+    def saveEvidenceRatios(file_name: str):
+        pass
+
+    def plotEvidences(image_file: str, scaled = True, log = False, ratio = True,
+                      line_colours = [],
+                      line_styles = [],
+                      legend_pos = 'lower left', x_label = r'$\epsilon_i$',
+                      y_label = r'${\cal Z}$'):
+
+        if scaled:
+            self.computeScales()
+
+        for j in range(self.n_metrics):
+            if scaled:
+                if log:
+                    xdata = np.array(self.epsilons) / self.logoptscales[j]
+                else:       # not log
+                    xdata = np.array(self.epsilons) / self.optscales[j]
+            else:           # not scaled
+                xdata = np.array(self.epsilons)
+
+            if ratio:
+                if log:
+                    data = np.log(self.evratio[j])
+                else:       # not log
+                    data = self.evratio[j]
+            else:           # not ratio
+                if log:
+                    data = np.log(self.evidences[j])
+                else:       # not log
+                    data = self.evidences[j]
+
+            plt.plot(xdata, (data),
+                     linestyle = line_styles, color = line_colours,
+                     label='Metric %i'%(j + 1))
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
+        legend = plt.legend(loc = legend_pos, shadow = True)
+        plt.xlim([0, 1])
+        plt.savefig(image_file)
+
+
+    def plotEvidence(png_file: str,
+                      line_colours = [],
+                      line_styles = [],
+                      legend_pos = 'lower left', x_label = r'$\epsilon_i$',
+                      y_label = r'${\cal Z}$'):
+        self.plotEvidences(png_file, False, False, False,
+                           line_colours, line_styles, legend_pos, x_label,
+                           y_label)
+
+    def plotEvidenceRatio():
+        pass
+
+    def plotLogEvidence():
+        pass
+
+    def plotLogEvidenceRatio():
+        pass
+
+    def plotScaledEvidence():
+        pass
+
+    def plotScaledEvidenceRatio():
+        pass
+
+    def plotScaledLogEvidence():
+        pass
+
+    def plotScaledLogEvidenceRatio():
+        pass
+
+    def squareDiff(x, j):
+        pass
+
+    def logSquareDiff(x, j):
+        pass
+
+    def computeScales():
+        if(!self.scales_computed):
+            for j in range(self.n_metrics):
+                res = op.minimize_scalar(self.squareDiff, args = j)
+                self.optscales[j] = res.x
+                logres = op.minimize_scalar(self.logSquareDiff, args = j,
+                                            bounds = (0, 10), method = 'bounded')
+                self.logoptscales[j] = logres.x
+        self.scales_computed = True
+
 if __name__ == "__main__":
     df = pd.read_csv(sys.args[1], sep = ',', header = 0)
     metrics = pd.read_csv(sys.args[2], sep = ',', header = 0)
-    params = sys.args[3:(len(sys.args))]
+    params = sys.args[3:(len(sys.args))] # Need a better way of doing this
 
     brute = BruteABC(df, params, metrics)
