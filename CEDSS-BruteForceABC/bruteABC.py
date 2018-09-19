@@ -20,14 +20,15 @@ When run as a script, it expects the following inputs:
 
 2. A metric metadata file in CSV format with column headings:
 
-   The first line should be 'metric,target,minimum,maximum'
+   The first line should be 'metric,target,minimum,maximum,operator'
 
    One row for each metric. The metric name should match exactly one column
    heading in the data file. The target is the target value for the metric
    -- i.e. the value it would have if the model perfectly fitted the data.
    The minimum is the minimum 'reasonable' value; the maximum is the maximum
    'reasonable' value. The minimum and maximum are used to scale each metric
-   so that the multiple metrics are comparable with each other.
+   so that the multiple metrics are comparable with each other. The operator
+   column should be equal to "log" if logarithms of the metric should be taken.
 
 3. A parameter metadata file in CSV format with column headings:
 
@@ -104,15 +105,24 @@ class BruteABC:
         self.df = df
         self.params = sorted(params.keys())
         self.metrics = metrics
+        self.n_metrics = len(metrics)
         self.headers = sorted(metrics.keys())
         self.calibvals = [metrics[key]['target'] for key in headers]
         self.minima = [metrics[key]['minimum'] for key in headers]
         self.maxima = [metrics[key]['maximum'] for key in headers]
+
+        for i in range(self.n_metrics):
+            if metrics[headers[i]]['operator'] == "log":
+                self.calibvals[i] = np.log(self.calibvals[i])
+                self.minima[i] = np.log(self.minima[i])
+                self.maxima[i] = np.log(self.maxima[i])
+                for j in range(len(self.df[self.headers[i]])):
+                    self.df[self.headers[i]][j] = np.log(self.df[self.headers[i]][j])
+
         self.difima = [self.maxima[i] - self.minima[i] for i in len(self.headers)]
         self.epsteps = epsteps
         self.epsilons = [1.0 * (maxep / epsteps) * i for i in range(epsteps + 1)]
         self.refeps = self.epsilons[1]
-        self.n_metrics = len(metrics)
         self.evidences = np.zeros(n_metrics * (epsteps + 1))
         self.evidences = self.evidences.reshape(n_metrics, epsteps + 1)
         self.evratio = np.zeros(n_metrics * (epsteps + 1))
@@ -125,12 +135,12 @@ class BruteABC:
         self.logoptscales = 1.0 * np.ones_like(self.calibvals)
         self.scales_computed = False
 
-        for i in range(eptsteps + 1)
+        for i in range(epsteps + 1)
             for j in range(self.n_metrics)
                 self.evidences[j][i]
-                    = sum(1.0 for val in 1.0 * np.array(df[self.headers[j]])
+                    = sum(1.0 for val in 1.0 * np.array(self.df[self.headers[j]])
                         if np.fabs((val - minima[j]) / self.difima[j])
-                            < self.epsilons[i]) / 1.0 * len(df[self.headers[j]])
+                            < self.epsilons[i]) / 1.0 * len(self.df[self.headers[j]])
                 if i > 0:
                     self.evratio[j][i] = self.evidences[j][i] / self.epsilons[i]
                 self.moments[j] = self.moments[j] + evidences[j][i] * self.epsilons[i]
@@ -202,7 +212,7 @@ class BruteABC:
 
             plt.plot(xdata, (data),
                      linestyle = line_styles[j], color = line_colours[j],
-                     label='Metric %i'%(j + 1))
+                     label = 'Metric %i (%s)'%(j + 1, self.headers[j]))
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         legend = plt.legend(loc = legend_pos, shadow = True)
