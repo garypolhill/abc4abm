@@ -88,6 +88,10 @@ _DEFAULT_EP_LABEL = r'$\epsilon_i$'
 _DEFAULT_EVIDENCE_LABEL = r'${\cal Z}$'
 _LOGRES_LOWER_BOUND = 0
 _LOGRES_UPPER_BOUND = 10
+_DEFAULT_LINE_COLOURS = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99',
+                         '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a',
+                         '#b15928', '#ffff99']  # From colour brewer
+_DEFAULT_LINE_STYLE = '-'
 
 class BruteABC:
     """BruceABC class
@@ -168,6 +172,11 @@ class BruteABC:
         rather than evidences. Convenience methods are provided to implement
         these options directly.
         """
+        if line_colours == []:
+            line_colours = _DEFAULT_LINE_COLOURS
+        if line_styles == []:
+            line_styles = [_DEFAULT_LINE_STYLE for i in range(self.n_metrics)]
+
         if scaled:
             self.computeScales()
 
@@ -192,7 +201,7 @@ class BruteABC:
                     data = self.evidences[j]
 
             plt.plot(xdata, (data),
-                     linestyle = line_styles, color = line_colours,
+                     linestyle = line_styles[j], color = line_colours[j],
                      label='Metric %i'%(j + 1))
         plt.xlabel(x_label)
         plt.ylabel(y_label)
