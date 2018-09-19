@@ -32,12 +32,10 @@ When run as a script, it expects the following inputs:
 
 3. A parameter metadata file in CSV format with column headings:
 
-   The first line should be 'param,minimum,maximum'
+   The first line should be 'param,type'
 
    One row for each parameter. The parameter name should match exactly one
-   column heading in the data file. The minimum and maximum values are
-   ignored, but can be used to specify the values explored in runs of
-   the model.
+   column heading in the data file. The type value is ignored by this script.
 
 Outputs:
 
@@ -149,7 +147,7 @@ class BruteABC:
                     self.logmoments[j]
                         = self.logmoments[j] + self.logevidences[j][i] * self.epsilons[i]
 
-    def saveEvidences(file_name: str, delimiter = ","):
+    def saveEvidences(file_name, delimiter = ","):
         """
         Save the evidences to the file (CSV format by default)
         """
@@ -159,7 +157,7 @@ class BruteABC:
                       axis = 1)
         np.savetxt(file_name, outdata, delimiter = delimiter)
 
-    def saveEvidenceRatios(file_name: str, delimiter = ","):
+    def saveEvidenceRatios(file_name, delimiter = ","):
         """
         Save the evidence ratio to the file (CSV format by default)
         """
@@ -169,7 +167,7 @@ class BruteABC:
                       axis = 1)
         np.savetxt(file_name, outdata, delimiter = delimiter)
 
-    def plotEvidences(image_file: str, scaled = True, log = False, ratio = True,
+    def plotEvidences(image_file, scaled = True, log = False, ratio = True,
                       line_colours = [],
                       line_styles = [],
                       legend_pos = _DEFAULT_LEGEND_POS,
@@ -219,7 +217,7 @@ class BruteABC:
         plt.xlim([0, 1])
         plt.savefig(image_file)
 
-    def plotEvidence(png_file: str,
+    def plotEvidence(png_file,
                      line_colours = [],
                      line_styles = [],
                      legend_pos = _DEFAULT_LEGEND_POS,
@@ -229,7 +227,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotEvidenceRatio(png_file: str,
+    def plotEvidenceRatio(png_file,
                           line_colours = [],
                           line_styles = [],
                           legend_pos = _DEFAULT_LEGEND_POS,
@@ -239,7 +237,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotLogEvidence(png_file: str,
+    def plotLogEvidence(png_file,
                         line_colours = [],
                         line_styles = [],
                         legend_pos = _DEFAULT_LEGEND_POS,
@@ -249,7 +247,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotLogEvidenceRatio(png_file: str,
+    def plotLogEvidenceRatio(png_file,
                              line_colours = [],
                              line_styles = [],
                              legend_pos = _DEFAULT_LEGEND_POS,
@@ -259,7 +257,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledEvidence(png_file: str,
+    def plotScaledEvidence(png_file,
                            line_colours = [],
                            line_styles = [],
                            legend_pos = _DEFAULT_LEGEND_POS,
@@ -269,7 +267,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledEvidenceRatio(png_file: str,
+    def plotScaledEvidenceRatio(png_file,
                                 line_colours = [],
                                 line_styles = [],
                                 legend_pos = _DEFAULT_LEGEND_POS,
@@ -279,7 +277,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledLogEvidence(png_file: str,
+    def plotScaledLogEvidence(png_file,
                               line_colours = [],
                               line_styles = [],
                               legend_pos = _DEFAULT_LEGEND_POS,
@@ -289,7 +287,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledLogEvidenceRatio(png_file: str,
+    def plotScaledLogEvidenceRatio(png_file,
                                    line_colours = [],
                                    line_styles = [],
                                    legend_pos = _DEFAULT_LEGEND_POS,
@@ -362,7 +360,7 @@ class BruteABC:
                 self.logoptscales[j] = logres.x
         self.scales_computed = True
 
-    def trianglePlots(file_name: str):
+    def trianglePlots(file_name):
         """
         Save triangle plots of the posteriors to the file_name.
         """
@@ -378,7 +376,7 @@ class BruteABC:
     	    print "Number of valid samples for metric ", j + 1,
                   " is too small to make a plot, skipping....."
 
-    def posteriorPlots(file_stem: str):
+    def posteriorPlots(file_stem):
         """
         Save plots of the posteriors (as histograms), one per parameter
         to a file name composed as file_stem_parameter.png
@@ -391,7 +389,8 @@ class BruteABC:
             for k in range(len(self.params)):
                 plt.figure(k + 1)
         	if len(plotsamps[:, 0]) > len(self.params):
-        	    plt.hist(plotsamps[:,k], 50, label = 'metric %i'%(j + 1),
+        	    plt.hist(plotsamps[:,k], 50,
+                         label = 'Metric %i (%s)'%(j + 1, self.headers[j]),
                          alpha = 0.5, normed = True)
 
         for k in range(len(self.params)):
