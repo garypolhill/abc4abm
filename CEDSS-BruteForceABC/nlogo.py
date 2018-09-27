@@ -70,9 +70,11 @@ class Widget:
             else:
                 sys.stderr.write("Unrecognized widget type: %s\n"%(typestr))
                 while(typestr.strip() != ""):
-                    typestr = fp.readline
+                    typestr = fp.readline()
 
             typestr = fp.readline()
+            if typestr == "":
+                break
             if typestr.strip() == '':
                 typestr = fp.readline()
 
@@ -80,11 +82,12 @@ class Widget:
 
 
 class GraphicsWindow(Widget):
-    type = "GRAPHICSWINDOW"
+    type = "GRAPHICS-WINDOW"
     def __init__(self, left, top, right, bottom, patch_size, font_size, x_wrap,
                  y_wrap, min_pxcor, max_pxcor, min_pycor, max_pycor, update_mode,
                  show_ticks, tick_label, frame_rate):
-        Widget.__init__(self, GraphicsWindow.type, left, top, right, bottom, "")
+        Widget.__init__(self, GraphicsWindow.type, left, top, right, bottom, "",
+                        False, True, False)
         self.patchSize = patch_size
         self.fontSize = font_size
         self.xWrap = x_wrap
@@ -128,7 +131,7 @@ class GraphicsWindow(Widget):
 
         return GraphicsWindow(left, top, right, bottom, patch_size, font_size,
                               x_wrap, y_wrap, min_pxcor, max_pxcor, min_pycor,
-                              max_pycor, update_mode, show_ticks, tick_lable,
+                              max_pycor, update_mode, show_ticks, tick_label,
                               frame_rate)
 
 
@@ -136,7 +139,8 @@ class Button(Widget):
     type = "BUTTON"
     def __init__(self, left, top, right, bottom, display, code, forever,
                  button_type, action_key, always_enable):
-        Widget.__init__(self, Button.type, left, top, right, bottom, display)
+        Widget.__init__(self, Button.type, left, top, right, bottom, display,
+                        False, False, False)
         self.code = code
         self.forever = forever
         self.buttonType = button_type
@@ -167,6 +171,19 @@ class Button(Widget):
 class Parameter(Widget):
     def __init__(self, type, left, top, right, bottom, display):
         Widget.__init__(self, type, left, top, right, bottom, display, True, False, False)
+        self.varname = '<<UNDEF>>'
+        self.default = 'NA'
+        self.value = 'NA'
+        self.datatype = 'string'
+
+    def variable(self):
+        return self.varname
+
+    def settingStr(self):
+        return str(self.value)
+
+    def datatypeStr(self):
+        return str(self.datatype)
 
 class Output(Widget):
     def __init__(self, type, left, top, right, bottom, display):
@@ -190,7 +207,7 @@ class Plot(Output):
         self.legendOn = legend_on
         self.code1 = code1
         self.code2 = code2
-        self.pens = []
+        self.pens = {}
 
     @staticmethod
     def read(fp):
@@ -210,11 +227,13 @@ class Plot(Output):
         codes = (fp.readline().strip().split('" "'))
 
         plot = Plot(left, right, top, bottom, display, xaxis, yaxis,
-                    xmin, xmax, ymax, autoplot_on, codes[0][1:-1], codes[1][0:-2])
+                    xmin, xmax, ymin, ymax, autoplot_on, legend_on,
+                    codes[0][1:-1], codes[1][0:-2])
         if(fp.readline().strip() == "PENS"):
             penstr = fp.readline().strip()
             while penstr != '':
                 plot.addPen(Pen.parse(penstr))
+                penstr = fp.readline().strip()
 
         return plot
 
@@ -234,7 +253,23 @@ class Pen:
 
     @staticmethod
     def parse(penstr):
-
+        words = penstr.split()
+        display = words[0]
+        i = 1
+        while not display.endswith('"'):
+            display = display + " " + words[i]
+            i = i + 1
+        interval = float(words[i])
+        mode = int(words[i + 1])
+        colour = int(words[i + 2])
+        in_legend = (words[i + 3] == "true")
+        setup_code = words[i + 4]
+        i = i + 5
+        while setup_code.endswith('\\"') or not setup_code.endswith('"'):
+            setup_code = setup_code + " " + words[i]
+            i = i + 1
+        update_code = " ".join(words[i:])
+        return Pen(display, interval, mode, colour, in_legend, setup_code, update_code)
 
 class TextBox(Info):
     type = "TEXTBOX"
@@ -245,12 +280,42 @@ class TextBox(Info):
         self.colour = colour
         self.transparent = transparent
 
+    @staticmethod
+    def read(fp):
+        left = int(fp.readline())
+        top = int(fp.readline())
+        right = int(fp.readline())
+        bottom = int(fp.readline())
+        display = fp.readline().strip()
+        font_size = int(fp.readline())
+        colour = float(fp.readline())
+        txt = fp.readline().strip()
+        transparent = (txt == 'true' or txt == '1' or txt == 'T')
+        return TextBox(left, top, right, bottom, display, font_size, colour,
+                       transparent)
+
 class Switch(Parameter):
     type = "SWITCH"
     def __init__(self, left, top, right, bottom, display, varname, on):
         Parameter.__init__(self, Switch.type, left, top, right, bottom, display)
         self.varname = varname
-        self.isSwitchedOn = (on == 0)
+        self.isSwitchedOn = on
+        self.value = self.isSwitchedOn
+        self.datatype = 'boolean'
+
+    @staticmethod
+    def read(fp):
+        left = int(fp.readline())
+        top = int(fp.readline())
+        right = int(fp.readline())
+        bottom = int(fp.readline())
+        display = fp.readline().strip()
+        varname = fp.readline().strip()
+        txt = fp.readline().strip()
+        on = (txt == '0')
+        res1 = fp.readline()
+        res2 = fp.readline()
+        return Switch(left, top, right, bottom, display, varname, on)
 
 class Chooser(Parameter):
     type = "CHOOSER"
@@ -260,6 +325,34 @@ class Chooser(Parameter):
         self.varname = varname
         self.choices = choices
         self.selection = selection
+        self.value = self.selection
+        self.datatype = 'numeric'
+
+    @staticmethod
+    def read(fp):
+        left = int(fp.readline())
+        top = int(fp.readline())
+        right = int(fp.readline())
+        bottom = int(fp.readline())
+        display = fp.readline().strip()
+        varname = fp.readline().strip()
+        txt = fp.readline().strip()
+        words = txt.split()
+        choices = []
+        choices.append(words[0])
+        i = 1
+        j = 0
+        while i < len(words):
+            while choices[j].beginswith('"') and not choices[j].endswith('"'):
+                choices[j] = choices[j] + " " + words[i]
+                i = i + 1
+            choices.append(words[i])
+            j = j + 1
+            i = i + 1
+        selection = int(fp.readline())
+        return Chooser(left, top, right, bottom, display, varname, choices,
+                       selection)
+
 
 class Slider(Parameter):
     type = "SLIDER"
@@ -273,6 +366,26 @@ class Slider(Parameter):
         self.step = step
         self.units = units
         self.isHorizontal = (orientation == "HORIZONTAL")
+        self.value = self.default
+        self.datatype = 'numeric'
+
+    @staticmethod
+    def read(fp):
+        left = int(fp.readline())
+        top = int(fp.readline())
+        right = int(fp.readline())
+        bottom = int(fp.readline())
+        display = fp.readline().strip()
+        varname = fp.readline().strip()
+        min = fp.readline().strip()
+        max = fp.readline().strip()
+        default = float(fp.readline())
+        step = fp.readline().strip()
+        res1 = fp.readline()
+        units = fp.readline().strip()
+        orientation = fp.readline().strip()
+        return Slider(left, top, right, bottom, display, varname, min, max,
+                      default, step, units, orientation)
 
 class Monitor(Output):
     type = "MONITOR"
@@ -283,10 +396,33 @@ class Monitor(Output):
         self.precision = precision
         self.fontSize = font_size
 
+    @staticmethod
+    def read(fp):
+        left = int(fp.readline())
+        top = int(fp.readline())
+        right = int(fp.readline())
+        bottom = int(fp.readline())
+        display = fp.readline().strip()
+        source = fp.readline().strip()
+        precision = int(fp.readline())
+        res1 = fp.readline()
+        font_size = int(fp.readline())
+        return Monitor(left, top, right, bottom, display, source, precision,
+                       font_size)
+
 class OutputArea(Output):
     type = "OUTPUT"
     def __init__(self, left, top, right, bottom, font_size):
         Output.__init__(self, OutputArea.type, left, top, right, bottom, "")
+
+    @staticmethod
+    def read(fp):
+        left = int(fp.readline())
+        top = int(fp.readline())
+        right = int(fp.readline())
+        bottom = int(fp.readline())
+        font_size = int(fp.readline())
+        return Output(left, top, right, bottom, font_size)
 
 class InputBox(Parameter):
     type = "INPUTBOX"
@@ -301,6 +437,23 @@ class InputBox(Parameter):
         self.isCommand = (datatype == "String (command)")
         self.isReporter = (datatype == "String (reporter)")
         self.isColour = (datatype == "Color")
+        if self.isNumeric:
+            self.datatype = 'numeric'
+
+    @staticmethod
+    def read(fp):
+        left = int(fp.readline())
+        top = int(fp.readline())
+        right = int(fp.readline())
+        bottom = int(fp.readline())
+        varname = fp.readline().strip()
+        value = fp.readline().strip()
+        txt = fp.readline().strip()
+        multiline = (txt == 'true' or txt == '1' or txt == 'T')
+        res1 = fp.readline()
+        datatype = fp.readline().strip()
+        return InputBox(left, top, right, bottom, varname, value, multiline,
+                        datatype)
 
 class BahaviorSpaceXMLError(Exception):
     def __init__(self, file, expected, found):
@@ -446,6 +599,7 @@ class NetlogoModel:
         self.linkShapes = link_shapes
         self.settings = settings
         self.deltatick = deltatick
+        self.params = {}
 
     @staticmethod
     def readSection(fp):
@@ -464,30 +618,74 @@ class NetlogoModel:
             sys.stderr.write("Error opening file %s: %s\n"%(file_name, e.strerror))
             return False
 
-        code = readSection(fp)
+        code = NetlogoModel.readSection(fp)
 
-        widgets = Widgets.read(fp)
+        widgets = Widget.read(fp)
 
-        info = readSection(fp)
+        info = NetlogoModel.readSection(fp)
 
-        shapes = readSection(fp)
+        shapes = NetlogoModel.readSection(fp)
 
-        version = readSection(fp)
+        version = NetlogoModel.readSection(fp)
         version = version[0:-1]
 
-        preview = readSection(fp)
+        preview = NetlogoModel.readSection(fp)
 
-        sd = readSection(fp)
+        sd = NetlogoModel.readSection(fp)
 
-        behav = Experiment.fromXMLString(readSection(fp))
+        behav = Experiment.fromXMLString(NetlogoModel.readSection(fp), file_name)
 
-        hubnet = readSection(fp)
+        hubnet = NetlogoModel.readSection(fp)
 
-        link_shapes = readSection(fp)
+        link_shapes = NetlogoModel.readSection(fp)
 
-        settings = readSection(fp)
+        settings = NetlogoModel.readSection(fp)
 
-        deltatick = readSection(fp)
+        deltatick = NetlogoModel.readSection(fp)
 
         return NetlogoModel(code, widgets, info, shapes, version, preview,
-                            sd, behav, hubet, link_shapes, settings, deltatick)
+                            sd, behav, hubnet, link_shapes, settings, deltatick)
+
+    def getParameters(self):
+        if len(self.params) == 0:
+            for w in self.widgets:
+                if(isinstance(w, Parameter)):
+                    self.params[w.variable()] = w
+        return self.params
+
+    def writeParameters(self, file_name):
+        try:
+            fp = io.open(file_name, "w")
+        except IOError as e:
+            sys.stderr.write("Error creating file %s: %s\n"%(file_name, e.strerror))
+
+        fp.write(u"parameter,setting,type,minimum,maximum\n")
+
+        param = self.getParameters()
+
+        for key in sorted(param.keys()):
+            fp.write(u"%s,%s,%s"%(key), param[key].settingStr(), param[key].datatypeStr()))
+            if param[key].datatypeStr() == 'numeric' or param[key].datatypeStr() == 'integer':
+                if isinstance(param[key], Slider):
+                    fp.write(u"%s,%s\n"%(str(param[key].minimum), str(param[key].maximum)))
+                elif isinstance(param[key], Chooser):
+                    fp.write(u"1,%d\n"%(len(param[key].choices)))
+                else:
+                    fp.write(u"%s,%s\n"%(param[key].settingStr(), param[key].settingStr()))
+            elif param[key].datatypeStr() == 'boolean':
+                fp.write(u"true,false\n")
+            else:
+                fp.write(u"NA,NA\n")
+
+        fp.close()
+
+if __name__ == "__main__":
+    nlogo = sys.argv[1]
+    model = NetlogoModel.read(nlogo)
+    print "Read " + nlogo
+    cmd = sys.argv[2]
+    if cmd == 'param':
+        model.writeParameters(sys.argv[3])
+    else:
+        sys.stderr.write("Command \"%s\" not recognized\n"%(cmd))
+    sys.exit(0)
