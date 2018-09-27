@@ -649,12 +649,14 @@ class Experiment:
             param[name] = value
         return self.withParameterSettings(param)
 
-    def withNSamples(self, samples, n):
+    def withNSamples(self, samples, n, final_save = False):
         expts = []
         for i in range(0, n):
             new_name = "%s-%0*d" % (self.name, (1 + int(math.log10(n))), i)
             expt = self.withSamples(samples)
             expt.rename(new_name)
+            if final_save:
+                expt.finallySaveParamMetricsExpt()
             expts.append(expt)
         return expts
 
@@ -756,6 +758,35 @@ class Experiment:
             self.go = go.code
         else:
             self.go = str(go)
+
+    def setFinal(self, final):
+        self.final = str(final)
+
+    def finallySaveParamMetrics(self, file_name):
+        paramStr = ""
+        wordStr = ""
+        for v in self.steppedValueSet:
+            paramStr = paramStr + v.variable + ","
+            wordStr = wordStr + v.variable + " \",\" "
+        for v in self.enumeratedValueSet:
+            paramStr = paramStr + v.variable + ","
+            wordStr = wordStr + v.variable + " \",\" "
+        for m in metrics:
+            paramStr = paramStr + m.replace(",", ".") + ","
+            wordStr = wordStr + "(" + m + ") \",\" "
+        self.final = '''
+            ifelse file-exists? "{file}" [
+                file-open "{file}"
+            ] [
+                file-open "{file}"
+                file-print "{param}"
+            ]
+            file-print (word {word})
+            file-close
+        '''.format(file = file_name, param = paramStr[:-1], word = wordStr[:-5])
+
+    def finallySaveParamMetricsExpt(self):
+        self.finallySaveParamMetrics(name + ".csv")
 
     def setTimeLimit(self, limit):
         self.timeLimit = float(limit)
@@ -966,7 +997,7 @@ if __name__ == "__main__":
     elif cmd == 'monte':
         samples = Sample.read(sys.argv[3], model.getParameters())
         expt = Experiment.fromWidgets(model.widgets, "x", int(sys.argv[4]))
-        expts = expt.withNSamples(samples, int(sys.argv[5]))
+        expts = expt.withNSamples(samples, int(sys.argv[5]), True)
         Experiment.writeExperiments(sys.argv[6], expts)
     else:
         sys.stderr.write("Command \"%s\" not recognized\n"%(cmd))
