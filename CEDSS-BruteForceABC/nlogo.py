@@ -22,6 +22,8 @@ __author__ = "Gary Polhill"
 # Imports
 import io
 import sys
+import math
+import random as rnd
 import xml.etree.ElementTree as xml
 
 # Classes
@@ -185,6 +187,9 @@ class Parameter(Widget):
     def datatypeStr(self):
         return str(self.datatype)
 
+    def setValue(self, value):
+        self.value = value
+
 class Output(Widget):
     def __init__(self, type, left, top, right, bottom, display):
         Widget.__init__(self, type, left, top, right, bottom, display, False, True, False)
@@ -239,6 +244,9 @@ class Plot(Output):
 
     def addPen(self, pen):
         self.pens[pen.display] = pen
+
+    def getPens(self):
+        return self.pens.values()
 
 class Pen:
     def __init__(self, display, interval, mode, colour, in_legend, setup_code,
@@ -326,7 +334,7 @@ class Chooser(Parameter):
         self.choices = choices
         self.selection = selection
         self.value = self.selection
-        self.datatype = 'numeric'
+        self.datatype = 'integer'
 
     @staticmethod
     def read(fp):
@@ -343,7 +351,7 @@ class Chooser(Parameter):
         i = 1
         j = 0
         while i < len(words):
-            while choices[j].beginswith('"') and not choices[j].endswith('"'):
+            while choices[j].startswith('"') and not choices[j].endswith('"'):
                 choices[j] = choices[j] + " " + words[i]
                 i = i + 1
             choices.append(words[i])
@@ -352,6 +360,9 @@ class Chooser(Parameter):
         selection = int(fp.readline())
         return Chooser(left, top, right, bottom, display, varname, choices,
                        selection)
+
+    def getSelectionStr(self):
+        return self.choices[self.selection]
 
 
 class Slider(Parameter):
@@ -437,7 +448,7 @@ class InputBox(Parameter):
         self.isCommand = (datatype == "String (command)")
         self.isReporter = (datatype == "String (reporter)")
         self.isColour = (datatype == "Color")
-        if self.isNumeric:
+        if self.isNumeric or self.isColour:
             self.datatype = 'numeric'
 
     @staticmethod
@@ -475,8 +486,8 @@ class SteppedValue:
     def fromXML(xml, file_name):
         if xml.tag != "steppedValueSet":
             raise BehaviorSpaceXMLError(file_name, "steppedValueSet", xml.tag)
-        return SteppedValue(xml.get("variable"), xml.get("first"),
-                            xml.get("step"), xml.get("last"))
+        return SteppedValue(xml.get("variable"), float(xml.get("first")),
+                            float(xml.get("step")), float(xml.get("last")))
 
 class EnumeratedValue:
     def __init__(self, variable, values):
@@ -578,11 +589,209 @@ class Experiment:
                 else:
                     raise BehaviorSpaceXML(file_name, "experiment sub-element", elem.tag)
 
-            experiments.append(Experiment, name, setup, go, final, time_limit,
+            experiments.append(Experiment(name, setup, go, final, time_limit,
                                exit_condition, metrics, stepped_values,
                                enumerated_values, repetitions,
-                               sequential_run_order, run_metrics_every_step)
+                               sequential_run_order, run_metrics_every_step))
         return experiments
+
+    @staticmethod
+    def fromWidgets(widgets, name, stop):
+        setup = ""
+        go = ""
+        outputs = []
+        params = []
+
+        for w in widgets:
+            if isinstance(w, Button):
+                if(w.display == "setup" or w.code == "setup"):
+                    setup = w.code
+                elif(w.display == "go" or w.code == "go"):
+                    go = w.code
+            elif isinstance(w, Output) and not isinstance(w, OutputArea):
+                outputs.append(w)
+            elif isinstance(w, Parameter):
+                params.append(w)
+
+        expt = None
+        if isinstance(stop, int):
+            expt = Experiment(name, setup, go, "", stop, None, [])
+        else:
+            expt = Experiment(name, setup, go, "", None, str(stop), [])
+        expt = expt.withParameterSettings(params)
+        for w in outputs:
+            expt.addMetric(w)
+
+        return expt
+
+    def withParameterSettings(self, param):
+        new_enum_set = []
+        for p in param:
+            if isinstance(p, Parameter):
+                valuearr = []
+                if p.datatypeStr() == 'string' and not p.settingStr().startswith('"') and not p.settingStr().startsWith('&quot;'):
+                    valuearr.append('"' + p.settingStr() + '"')
+                else
+                    valuearr.append(p.settingStr())
+                new_enum_set.append(EnumeratedValue(p.variable(), valuearr))
+            else:
+                new_enum_set.append(EnumeratedValue(p, param[p]))
+        return Experiment(self.name, self.setup, self.go, self.final, self.timeLimit,
+                          self.exitCondition, self.metrics, [], new_enum_set,
+                          self.repetitions, self.sequentialRunOrder,
+                          self.runMetricsEveryStep)
+
+    def withSamples(self, samples):
+        param = {}
+        for s in samples:
+            name = s.param.variable()
+            value = s.sample()
+            param[name] = value
+        return self.withParameterSettings(param)
+
+    def withNSamples(self, samples, n):
+        expts = []
+        for i in range(0, n):
+            new_name = "%s-%0*d" % (self.name, (1 + int(math.log10(n))), i)
+            expt = self.withSamples(samples)
+            expt.rename(new_name)
+            expts.append(expt)
+        return expts
+
+    @staticmethod
+    def writeExperimentHeader(fp):
+        fp.write(u"<?xml version=\"1.0\" econding=\"UTF-8\"?>\n")
+        fp.write(u"<!DOCTYPE experiments SYSTEM \"behaviorspace.dtd\">\n")
+        fp.write(u"<experiments>\n")
+
+    @staticmethod
+    def writeExperimentFooter(fp):
+        fp.write(u"</experiments>\n")
+
+    @staticmethod
+    def writeExperiments(file_name, expts):
+        try:
+            fp = io.open(file_name, "w")
+        except IOError as e:
+            sys.stderr.write("Error creating file %s: %s\n"%(file_name, e.strerror))
+            return False
+
+        Experiment.writeExperimentHeader(fp)
+
+        for expt in expts:
+            expt.writeExperimentDetails(fp)
+
+        Experiment.writeExperimentFooter(fp)
+
+        fp.close()
+        return True
+
+    def writeExperimentDetails(self, fp):
+        fp.write(u"  <experiment name=\"%s\" repetitions=\"%d\" sequentialRunOrder=\"%s\" runMetricsEveryStep=\"%s\">\n"
+                 %(self.name, self.repetitions,
+                   "true" if self.sequentialRunOrder else "false",
+                   "true" if self.runMetricsEveryStep else "false"))
+        if self.setup != "":
+            fp.write(u"    <setup>%s</setup>\n" % self.escape(self.setup))
+        if self.go != "":
+            fp.write(u"    <go>%s</go>\n" % self.escape(self.go))
+        if self.timeLimit != None:
+            fp.write(u"    <timeLimit steps=\"%f\"/>\n" % self.timeLimit)
+        if self.exitCondition != None:
+            fp.write(u"    <exitCondition>%s</exitCondition>\n" % self.escape(self.exitCondition))
+        for m in self.metrics:
+            fp.write(u"    <metric>%s</metric>\n" % self.escape(m))
+
+        for v in self.steppedValueSet:
+            fp.write(u"    <steppedValueSet variable=\"%s\" first=\"%f\" step=\"%f\" last=\"%f\"/>\n"
+                     %(v.variable, v.first, v.step, v.last))
+
+        for v in self.enumeratedValueSet:
+            fp.write(u"    <enumeratedValueSet variable=\"%s\">\n" % v.variable)
+            for w in v.values:
+                fp.write(u"      <value value=\"%s\"/>\n" % w.replace('"', '&quot;'))
+            fp.write(u"    </emumeratedValueSet>\n")
+
+        fp.write(u"  </experiment>\n")
+
+    def escape(self, str):
+        return str.replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
+
+    def writeExperiment(self, file_name):
+        try:
+            fp = io.open(file_name, "w")
+        except IOError as e:
+            sys.stderr.write("Error creating file %s: %s\n"%(file_name, e.strerror))
+            return False
+
+        Experiment.writeExperimentHeader(fp)
+
+        self.writeExperimentDetails(fp)
+
+        Experiment.writeExperimentFooter(fp)
+        fp.close()
+
+        return True
+
+    def rename(self, new_name):
+        self.name = str(new_name)
+
+    def setReps(self, reps):
+        self.repetitions = int(reps)
+
+    def setSequentialRunOrder(self, seq):
+        self.sequentialRunOrder = bool(seq)
+
+    def setRunMetricsEveryStep(self, run):
+        self.runMetricsEveryStep = bool(run)
+
+    def setSetup(self, setup):
+        if isinstance(setup, Button):
+            self.setup = setup.code
+        else:
+            self.setup = str(setup)
+
+    def setGo(self, go):
+        if isinstance(go, Button):
+            self.go = go.code
+        else:
+            self.go = str(go)
+
+    def setTimeLimit(self, limit):
+        self.timeLimit = float(limit)
+
+    def setExitCondition(self, exitCond):
+        self.exitCondition = str(exitCond)
+
+    def clearMetrics(self):
+        self.metrics = []
+
+    def addMetric(self, metric):
+        if isinstance(metric, Monitor):
+            self.metrics.append(metric.source)
+        elif isinstance(metric, Plot):
+            for p in metric.getPens():
+                self.addMetric(p)
+        elif isinstance(metric, Pen):
+            code = metric.updateCode
+            if code.startswith("plot "):
+                code = code[5:]
+            self.metrics.append(code)
+        else:
+            self.metrics = str(metric)
+
+    def clearSteppedValueSet(self):
+        self.steppedValueSet = []
+
+    def addSteppedValue(self, variable, first, step, last):
+        self.steppedValueSet.append(SteppedValue(str(variable), float(first), float(step), float(last)))
+
+    def clearEnumeratedValueSet(self):
+        self.enumeratedValueSet = []
+
+    def addEnumeratedValue(self, variable, values):
+        self.enumeratedValueSet.append(EnumeratedValue(str(variable), values))
+
 
 class NetlogoModel:
     def __init__(self, code, widgets, info, shapes, version, preview, sd,
@@ -600,6 +809,7 @@ class NetlogoModel:
         self.settings = settings
         self.deltatick = deltatick
         self.params = {}
+        self.expts = {}
 
     @staticmethod
     def readSection(fp):
@@ -653,6 +863,12 @@ class NetlogoModel:
                     self.params[w.variable()] = w
         return self.params
 
+    def getExperiments(self):
+        if len(self.expts) == 0 and len(self.behav) != 0:
+            for b in self.behav:
+                self.expts[b.name] = b
+        return self.expts
+
     def writeParameters(self, file_name):
         try:
             fp = io.open(file_name, "w")
@@ -664,12 +880,12 @@ class NetlogoModel:
         param = self.getParameters()
 
         for key in sorted(param.keys()):
-            fp.write(u"%s,%s,%s"%(key), param[key].settingStr(), param[key].datatypeStr()))
+            fp.write(u"%s,%s,%s"%(key, param[key].settingStr(), param[key].datatypeStr()))
             if param[key].datatypeStr() == 'numeric' or param[key].datatypeStr() == 'integer':
                 if isinstance(param[key], Slider):
                     fp.write(u"%s,%s\n"%(str(param[key].minimum), str(param[key].maximum)))
                 elif isinstance(param[key], Chooser):
-                    fp.write(u"1,%d\n"%(len(param[key].choices)))
+                    fp.write(u"0,%d\n"%(len(param[key].choices) - 1))
                 else:
                     fp.write(u"%s,%s\n"%(param[key].settingStr(), param[key].settingStr()))
             elif param[key].datatypeStr() == 'boolean':
@@ -679,13 +895,79 @@ class NetlogoModel:
 
         fp.close()
 
+    def printExperiments(self):
+        if len(self.behav):
+            print "There are no experiments"
+        else:
+            print "Experiments:"
+            for expt in self.behav:
+                print "\t" + expt.name
+
+class Sample:
+    def __init__(self, param, setting, datatype, minimum, maximum):
+        self.param = param
+        self.setting = setting
+        self.datatype = datatype
+        self.minimum = minimum
+        self.maximum = maximum
+
+    @staticmethod
+    def read(file_name, params):
+        try:
+            fp = io.open(file_name)
+        except IOError as e:
+            sys.stderr.write("Error opening file %s: %s\n"%(file_name, e.strerror))
+            return False
+
+        header = fp.readline().strip()
+
+        samples = []
+        for line in fp:
+            line = line.strip()
+            words = line.split(",")
+            if words[0] in params:
+                param = params[words[0]]
+                samples.append(Sample(param, words[1], words[2], words[3], words[4]))
+            else:
+                sys.stderr.write("Warning: parameter %s ignored\n" % words[0])
+
+        fp.close()
+        return samples
+
+    def sample(self):
+        if self.minimum == "NA" or self.maximum == "NA":
+            return self.setting
+        elif self.minimum == self.maximum:
+            return self.minimum
+        else:
+            if self.datatype == "integer":
+                return rnd.randint(int(self.minimum), int(self.maximum))
+            elif self.datatype == "numeric":
+                return rnd.uniform(float(self.minimum), float(self.maximum))
+            elif self.datatype == "boolean":
+                return (rnd.random() < 0.5)
+            else:
+                return self.setting
+
+    def setSample(self):
+        param.setValue(self.sample())
+
 if __name__ == "__main__":
     nlogo = sys.argv[1]
     model = NetlogoModel.read(nlogo)
+    if(model == False):
+        sys.exit(1)
     print "Read " + nlogo
     cmd = sys.argv[2]
     if cmd == 'param':
         model.writeParameters(sys.argv[3])
+    elif cmd == 'expts':
+        model.printExperiments()
+    elif cmd == 'monte':
+        samples = Sample.read(sys.argv[3], model.getParameters())
+        expt = Experiment.fromWidgets(model.widgets, "x", int(sys.argv[4]))
+        expts = expt.withNSamples(samples, int(sys.argv[5]))
+        Experiment.writeExperiments(sys.argv[6], expts)
     else:
         sys.stderr.write("Command \"%s\" not recognized\n"%(cmd))
     sys.exit(0)
