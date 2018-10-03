@@ -21,6 +21,7 @@ __author__ = "Gary Polhill"
 
 # Imports
 import io
+import os
 import sys
 import math
 import random as rnd
@@ -492,7 +493,11 @@ class SteppedValue:
 class EnumeratedValue:
     def __init__(self, variable, values):
         self.variable = variable
-        self.values = values
+        if isinstance(values, list):
+            self.values = values
+        else:
+            self.values = []
+            self.values.append(values)
 
     @staticmethod
     def fromXML(xml, file_name):
@@ -631,7 +636,7 @@ class Experiment:
                 valuearr = []
                 if p.datatypeStr() == 'string' and not p.settingStr().startswith('"') and not p.settingStr().startsWith('&quot;'):
                     valuearr.append('"' + p.settingStr() + '"')
-                else
+                else:
                     valuearr.append(p.settingStr())
                 new_enum_set.append(EnumeratedValue(p.variable(), valuearr))
             else:
@@ -697,6 +702,8 @@ class Experiment:
             fp.write(u"    <setup>%s</setup>\n" % self.escape(self.setup))
         if self.go != "":
             fp.write(u"    <go>%s</go>\n" % self.escape(self.go))
+        if self.final != "":
+            fp.write(u"    <final>\n%s\n    </final>\n" % self.escape(self.final))
         if self.timeLimit != None:
             fp.write(u"    <timeLimit steps=\"%f\"/>\n" % self.timeLimit)
         if self.exitCondition != None:
@@ -711,7 +718,7 @@ class Experiment:
         for v in self.enumeratedValueSet:
             fp.write(u"    <enumeratedValueSet variable=\"%s\">\n" % v.variable)
             for w in v.values:
-                fp.write(u"      <value value=\"%s\"/>\n" % w.replace('"', '&quot;'))
+                fp.write(u"      <value value=\"%s\"/>\n" % str(w).replace('"', '&quot;'))
             fp.write(u"    </emumeratedValueSet>\n")
 
         fp.write(u"  </experiment>\n")
@@ -771,7 +778,7 @@ class Experiment:
         for v in self.enumeratedValueSet:
             paramStr = paramStr + v.variable + ","
             wordStr = wordStr + v.variable + " \",\" "
-        for m in metrics:
+        for m in self.metrics:
             paramStr = paramStr + m.replace(",", ".") + ","
             wordStr = wordStr + "(" + m + ") \",\" "
         self.final = '''
@@ -786,7 +793,7 @@ class Experiment:
         '''.format(file = file_name, param = paramStr[:-1], word = wordStr[:-5])
 
     def finallySaveParamMetricsExpt(self):
-        self.finallySaveParamMetrics(name + ".csv")
+        self.finallySaveParamMetrics(self.name + ".csv")
 
     def setTimeLimit(self, limit):
         self.timeLimit = float(limit)
@@ -805,8 +812,8 @@ class Experiment:
                 self.addMetric(p)
         elif isinstance(metric, Pen):
             code = metric.updateCode
-            if code.startswith("plot "):
-                code = code[5:]
+            if code.startswith('"plot '):
+                code = code[6:-1]
             self.metrics.append(code)
         else:
             self.metrics = str(metric)
@@ -906,23 +913,23 @@ class NetlogoModel:
         except IOError as e:
             sys.stderr.write("Error creating file %s: %s\n"%(file_name, e.strerror))
 
-        fp.write(u"parameter,setting,type,minimum,maximum\n")
+        fp.write(u"parameter,type,setting,minimum,maximum\n")
 
         param = self.getParameters()
 
         for key in sorted(param.keys()):
-            fp.write(u"%s,%s,%s"%(key, param[key].settingStr(), param[key].datatypeStr()))
+            fp.write(u"%s,%s,%s"%(key, param[key].datatypeStr(), param[key].settingStr()))
             if param[key].datatypeStr() == 'numeric' or param[key].datatypeStr() == 'integer':
                 if isinstance(param[key], Slider):
-                    fp.write(u"%s,%s\n"%(str(param[key].minimum), str(param[key].maximum)))
+                    fp.write(u",%s,%s\n"%(str(param[key].minimum), str(param[key].maximum)))
                 elif isinstance(param[key], Chooser):
-                    fp.write(u"0,%d\n"%(len(param[key].choices) - 1))
+                    fp.write(u",0,%d\n"%(len(param[key].choices) - 1))
                 else:
-                    fp.write(u"%s,%s\n"%(param[key].settingStr(), param[key].settingStr()))
+                    fp.write(u",%s,%s\n"%(param[key].settingStr(), param[key].settingStr()))
             elif param[key].datatypeStr() == 'boolean':
-                fp.write(u"true,false\n")
+                fp.write(u",true,false\n")
             else:
-                fp.write(u"NA,NA\n")
+                fp.write(u",NA,NA\n")
 
         fp.close()
 
@@ -935,7 +942,7 @@ class NetlogoModel:
                 print "\t" + expt.name
 
 class Sample:
-    def __init__(self, param, setting, datatype, minimum, maximum):
+    def __init__(self, param, datatype, setting, minimum, maximum):
         self.param = param
         self.setting = setting
         self.datatype = datatype
@@ -994,11 +1001,37 @@ if __name__ == "__main__":
         model.writeParameters(sys.argv[3])
     elif cmd == 'expts':
         model.printExperiments()
-    elif cmd == 'monte':
+    elif cmd == 'monte' or cmd == 'montq':
         samples = Sample.read(sys.argv[3], model.getParameters())
         expt = Experiment.fromWidgets(model.widgets, "x", int(sys.argv[4]))
         expts = expt.withNSamples(samples, int(sys.argv[5]), True)
         Experiment.writeExperiments(sys.argv[6], expts)
+        if cmd == 'montq':
+            try:
+                fp = io.open(sys.argv[7], "w")
+            except IOError as e:
+                sys.stderr.write("Error creating file %s: %s\n"%(sys.argv[7], e.strerror))
+            fp.write(u'''#!/bin/sh
+#$ -cwd
+#$ -t 1-{nsamp}
+#$ -pe smp {threads}
+printf -v JOB_ID "%0{size}d" $(expr SGE_TASK_ID - 1)
+export JAVA_HOME="{java_home}"
+wd=`pwd`
+cd "{nlogo_home}"
+xml="$wd/{xml}"
+xpt="x$JOB_ID"
+out="$wd/x$JOB_ID.out"
+csv="$wd/x$JOB_ID-table.csv"
+{nlogo_invoke} --model {model} --setup-file "$xml" --experiment "$xpt" --threads {threads} --table "$csv" > "$out" 2>&1
+            '''.format(nsamp = int(sys.argv[5]),
+                        size = (1 + int(math.log10(float(sys.argv[5])))), threads = 2,
+                        java_home = os.getenv('JAVA_HOME', '/usr/bin/java'),
+                        nlogo_home = os.getenv('NETLOGO_HOME', '/Applications/NetLogo 6.0.4'),
+                        nlogo_invoke = os.getenv('NETLOGO_INVOKE', '/Applications/NetLogo 6.0.4/netlogo-headless.sh'),
+                        xml = sys.argv[6], model = nlogo))
+            fp.close()
+            os.chmod(sys.argv[7], 0775)
     else:
         sys.stderr.write("Command \"%s\" not recognized\n"%(cmd))
     sys.exit(0)
