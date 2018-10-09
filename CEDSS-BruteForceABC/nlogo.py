@@ -355,6 +355,8 @@ class Chooser(Parameter):
             while choices[j].startswith('"') and not choices[j].endswith('"'):
                 choices[j] = choices[j] + " " + words[i]
                 i = i + 1
+            if i >= len(words):
+                break
             choices.append(words[i])
             j = j + 1
             i = i + 1
@@ -1015,7 +1017,7 @@ if __name__ == "__main__":
 #$ -cwd
 #$ -t 1-{nsamp}
 #$ -pe smp {threads}
-printf -v JOB_ID "%0{size}d" $(expr SGE_TASK_ID - 1)
+printf -v JOB_ID "%0{size}d" $(expr $SGE_TASK_ID - 1)
 export JAVA_HOME="{java_home}"
 wd=`pwd`
 cd "{nlogo_home}"
@@ -1023,7 +1025,7 @@ xml="$wd/{xml}"
 xpt="x$JOB_ID"
 out="$wd/x$JOB_ID.out"
 csv="$wd/x$JOB_ID-table.csv"
-{nlogo_invoke} --model {model} --setup-file "$xml" --experiment "$xpt" --threads {threads} --table "$csv" > "$out" 2>&1
+"{nlogo_invoke}" --model "$wd/{model}" --setup-file "$xml" --experiment "$xpt" --threads {threads} --table "$csv" > "$out" 2>&1
             '''.format(nsamp = int(sys.argv[5]),
                         size = (1 + int(math.log10(float(sys.argv[5])))), threads = 2,
                         java_home = os.getenv('JAVA_HOME', '/usr/bin/java'),
