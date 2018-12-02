@@ -355,6 +355,8 @@ class Chooser(Parameter):
             while choices[j].startswith('"') and not choices[j].endswith('"'):
                 choices[j] = choices[j] + " " + words[i]
                 i = i + 1
+            if i >= len(words):
+                break
             choices.append(words[i])
             j = j + 1
             i = i + 1
@@ -667,7 +669,7 @@ class Experiment:
 
     @staticmethod
     def writeExperimentHeader(fp):
-        fp.write(u"<?xml version=\"1.0\" econding=\"UTF-8\"?>\n")
+        fp.write(u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
         fp.write(u"<!DOCTYPE experiments SYSTEM \"behaviorspace.dtd\">\n")
         fp.write(u"<experiments>\n")
 
@@ -705,7 +707,7 @@ class Experiment:
         if self.final != "":
             fp.write(u"    <final>\n%s\n    </final>\n" % self.escape(self.final))
         if self.timeLimit != None:
-            fp.write(u"    <timeLimit steps=\"%f\"/>\n" % self.timeLimit)
+            fp.write(u"    <timeLimit steps=\"%d\"/>\n" % math.ceil(self.timeLimit))
         if self.exitCondition != None:
             fp.write(u"    <exitCondition>%s</exitCondition>\n" % self.escape(self.exitCondition))
         for m in self.metrics:
@@ -719,7 +721,7 @@ class Experiment:
             fp.write(u"    <enumeratedValueSet variable=\"%s\">\n" % v.variable)
             for w in v.values:
                 fp.write(u"      <value value=\"%s\"/>\n" % str(w).replace('"', '&quot;'))
-            fp.write(u"    </emumeratedValueSet>\n")
+            fp.write(u"    </enumeratedValueSet>\n")
 
         fp.write(u"  </experiment>\n")
 
@@ -976,10 +978,17 @@ class Sample:
         if self.minimum == "NA" or self.maximum == "NA":
             return self.setting
         elif self.minimum == self.maximum:
-            return self.minimum
+            if isinstance(self.param, Chooser):
+                return self.param.choices[int(self.maximum)]
+            else:
+                return self.minimum
         else:
             if self.datatype == "integer":
-                return rnd.randint(int(self.minimum), int(self.maximum))
+                rint = rnd.randint(int(self.minimum), int(self.maximum))
+                if isinstance(self.param, Chooser):
+                    return self.param.choices[rint]
+                else:
+                    return rint
             elif self.datatype == "numeric":
                 return rnd.uniform(float(self.minimum), float(self.maximum))
             elif self.datatype == "boolean":
@@ -988,7 +997,7 @@ class Sample:
                 return self.setting
 
     def setSample(self):
-        param.setValue(self.sample())
+        self.param.setValue(self.sample())
 
 if __name__ == "__main__":
     nlogo = sys.argv[1]
@@ -1015,7 +1024,7 @@ if __name__ == "__main__":
 #$ -cwd
 #$ -t 1-{nsamp}
 #$ -pe smp {threads}
-printf -v JOB_ID "%0{size}d" $(expr SGE_TASK_ID - 1)
+printf -v JOB_ID "%0{size}d" $(expr $SGE_TASK_ID - 1)
 export JAVA_HOME="{java_home}"
 wd=`pwd`
 cd "{nlogo_home}"
@@ -1023,7 +1032,7 @@ xml="$wd/{xml}"
 xpt="x$JOB_ID"
 out="$wd/x$JOB_ID.out"
 csv="$wd/x$JOB_ID-table.csv"
-{nlogo_invoke} --model {model} --setup-file "$xml" --experiment "$xpt" --threads {threads} --table "$csv" > "$out" 2>&1
+"{nlogo_invoke}" --model "$wd/{model}" --setup-file "$xml" --experiment "$xpt" --threads {threads} --table "$csv" > "$out" 2>&1
             '''.format(nsamp = int(sys.argv[5]),
                         size = (1 + int(math.log10(float(sys.argv[5])))), threads = 2,
                         java_home = os.getenv('JAVA_HOME', '/usr/bin/java'),
