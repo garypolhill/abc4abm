@@ -133,9 +133,9 @@ class BruteABC:
         self.logoptscales = 1.0 * np.ones_like(self.calibvals)
         self.scales_computed = False
 
-        for i in range(epsteps + 1)
-            for j in range(self.n_metrics)
-                self.evidences[j][i]
+        for i in range(epsteps + 1):
+            for j in range(self.n_metrics):
+                self.evidences[j][i] \
                     = sum(1.0 for val in 1.0 * np.array(self.df[self.headers[j]])
                         if np.fabs((val - minima[j]) / self.difima[j])
                             < self.epsilons[i]) / 1.0 * len(self.df[self.headers[j]])
@@ -144,7 +144,7 @@ class BruteABC:
                 self.moments[j] = self.moments[j] + evidences[j][i] * self.epsilons[i]
                 if self.evidences[j][i] > 0.0:
                     self.logevidences[j][i] = np.log(self.evidences[j][i])
-                    self.logmoments[j]
+                    self.logmoments[j] \
                         = self.logmoments[j] + self.logevidences[j][i] * self.epsilons[i]
 
     def saveEvidences(file_name, delimiter = ","):
@@ -325,7 +325,7 @@ class BruteABC:
             if(indx > self.epsteps):
                 diff = self.logevidences[0][i]
             else:
-	            if(indx == 0):
+	        if(indx == 0):
                     indx = 1
 	            diff = (self.logevidences[0][i] - self.logevidences[j][indx])
             thissum += diff * diff
@@ -343,10 +343,10 @@ class BruteABC:
         when creating the BruteABC object, the rescale argument should be set to
         True.
         """
-        if(!self.rescale):
+        if(not self.rescale):
             self.scales_computed = True
 
-        if(!self.scales_computed):
+        if(not self.scales_computed):
             for i in range(len(self.headers)):
                 self.initscales[i] = 1.0 * (max(np.fabs(self.df[self.headers[i]])))
 
@@ -373,7 +373,7 @@ class BruteABC:
     	    fig = triangle.corner(plotsamps, labels = self.params)
     	    fig.savefig(file_name, dpi = 150)
     	else:
-    	    print "Number of valid samples for metric ", j + 1,
+    	    print "Number of valid samples for metric ", j + 1, \
                   " is too small to make a plot, skipping....."
 
     def posteriorPlots(file_stem):
@@ -382,7 +382,7 @@ class BruteABC:
         to a file name composed as file_stem_parameter.png
         """
         self.computeScales()
-        for j in range(self.n_metrics)):
+        for j in range(self.n_metrics):
             postsamples = self.df[np.fabs(self.df[self.headers[j]])
                                   < self.refeps * self.initscales[j] * self.logoptscales[j] ]
             plotsamps = np.array(postsamples[self.params])[:, 0:len(self.params)]
