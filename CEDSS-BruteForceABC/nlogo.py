@@ -1029,9 +1029,9 @@ export JAVA_HOME="{java_home}"
 wd=`pwd`
 cd "{nlogo_home}"
 xml="$wd/{xml}"
-xpt="x$JOB_ID"
-out="$wd/x$JOB_ID.out"
-csv="$wd/x$JOB_ID-table.csv"
+xpt="x-$JOB_ID"
+out="$wd/x-$JOB_ID.out"
+csv="$wd/x-$JOB_ID-table.csv"
 "{nlogo_invoke}" --model "$wd/{model}" --setup-file "$xml" --experiment "$xpt" --threads {threads} --table "$csv" > "$out" 2>&1
             '''.format(nsamp = int(sys.argv[5]),
                         size = (1 + int(math.log10(float(sys.argv[5])))), threads = 2,

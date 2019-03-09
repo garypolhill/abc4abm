@@ -32,7 +32,7 @@ When run as a script, it expects the following inputs:
 
 3. A parameter metadata file in CSV format with column headings:
 
-   The first line should be 'param,type'
+   The first line should be 'parameter,type'
 
    One row for each parameter. The parameter name should match exactly one
    column heading in the data file. The type value is ignored by this script.
@@ -101,33 +101,33 @@ class BruteABC:
     def __init__(self, df, params, metrics, epsteps = _DEFAULT_EPSTEPS,
                  maxep = _DEFAULT_MAXEP, rescale = False):
         self.df = df
-        self.params = sorted(params.keys())
-        self.metrics = metrics
+        self.params = [params['parameter'][i] for i in range(len(params))]
         self.n_metrics = len(metrics)
-        self.headers = sorted(metrics.keys())
-        self.calibvals = [metrics[key]['target'] for key in headers]
-        self.minima = [metrics[key]['minimum'] for key in headers]
-        self.maxima = [metrics[key]['maximum'] for key in headers]
+        self.headers = [metrics['metric'][i] for i in range(self.n_metrics)]
+        self.calibvals = [metrics['target'][i] for i in range(self.n_metrics)]
+        self.minima = [metrics['minimum'][i] for i in range(self.n_metrics)]
+        self.maxima = [metrics['maximum'][i] for i in range(self.n_metrics)]
+        self.rescale = rescale
 
         for i in range(self.n_metrics):
-            if metrics[headers[i]]['operator'] == "log":
+            if metrics['operator'][i] == "log":
                 self.calibvals[i] = np.log(self.calibvals[i])
                 self.minima[i] = np.log(self.minima[i])
                 self.maxima[i] = np.log(self.maxima[i])
-                for j in range(len(self.df[self.headers[i]])):
-                    self.df[self.headers[i]][j] = np.log(self.df[self.headers[i]][j])
+                self.df.loc[:, self.headers[i]] = np.log(self.df[self.headers[i]].to_numpy())
 
-        self.difima = [self.maxima[i] - self.minima[i] for i in len(self.headers)]
+        self.difima = [self.maxima[i] - self.minima[i] for i in range(self.n_metrics)]
         self.epsteps = epsteps
         self.epsilons = [1.0 * (maxep / epsteps) * i for i in range(epsteps + 1)]
         self.refeps = self.epsilons[1]
-        self.evidences = np.zeros(n_metrics * (epsteps + 1))
-        self.evidences = self.evidences.reshape(n_metrics, epsteps + 1)
-        self.evratio = np.zeros(n_metrics * (epsteps + 1))
-        self.evratio = self.evratio.reshape(n_metrics, epsteps + 1)
-        self.logevidences = np.zeros(n_metrics * (epsteps + 1))
-        self.logevidences = self.logevidences.reshape(n_metrics, epsteps + 1)
+        self.evidences = np.zeros(self.n_metrics * (epsteps + 1))
+        self.evidences = self.evidences.reshape(self.n_metrics, epsteps + 1)
+        self.evratio = np.zeros(self.n_metrics * (epsteps + 1))
+        self.evratio = self.evratio.reshape(self.n_metrics, epsteps + 1)
+        self.logevidences = np.zeros(self.n_metrics * (epsteps + 1))
+        self.logevidences = self.logevidences.reshape(self.n_metrics, epsteps + 1)
         self.moments = 1.0 * np.zeros_like(self.calibvals)
+        self.logmoments = 1.0 * np.zeros_like(self.calibvals)
         self.initscales = 1.0 * np.ones_like(self.calibvals)
         self.optscales = 1.0 * np.ones_like(self.calibvals)
         self.logoptscales = 1.0 * np.ones_like(self.calibvals)
@@ -137,17 +137,17 @@ class BruteABC:
             for j in range(self.n_metrics):
                 self.evidences[j][i] \
                     = sum(1.0 for val in 1.0 * np.array(self.df[self.headers[j]])
-                        if np.fabs((val - minima[j]) / self.difima[j])
+                        if np.fabs((val - self.minima[j]) / self.difima[j])
                             < self.epsilons[i]) / 1.0 * len(self.df[self.headers[j]])
                 if i > 0:
                     self.evratio[j][i] = self.evidences[j][i] / self.epsilons[i]
-                self.moments[j] = self.moments[j] + evidences[j][i] * self.epsilons[i]
+                self.moments[j] = self.moments[j] + self.evidences[j][i] * self.epsilons[i]
                 if self.evidences[j][i] > 0.0:
                     self.logevidences[j][i] = np.log(self.evidences[j][i])
                     self.logmoments[j] \
                         = self.logmoments[j] + self.logevidences[j][i] * self.epsilons[i]
 
-    def saveEvidences(file_name, delimiter = ","):
+    def saveEvidences(self, file_name, delimiter = ","):
         """
         Save the evidences to the file (CSV format by default)
         """
@@ -155,9 +155,9 @@ class BruteABC:
         for j in range(self.n_metrics):
             np.append(outdata, np.reshape(self.evidences[j], (self.epsteps + 1, 1)),
                       axis = 1)
-        np.savetxt(file_name, outdata, delimiter = delimiter)
+        np.savetxt(self.mkname(file_name), outdata, delimiter = delimiter)
 
-    def saveEvidenceRatios(file_name, delimiter = ","):
+    def saveEvidenceRatios(self, file_name, delimiter = ","):
         """
         Save the evidence ratio to the file (CSV format by default)
         """
@@ -165,9 +165,9 @@ class BruteABC:
         for j in range(self.n_metrics):
             np.append(outdata, np.reshape(self.evratio[j], (self.epsteps + 1, 1)),
                       axis = 1)
-        np.savetxt(file_name, outdata, delimiter = delimiter)
+        np.savetxt(self.mkname(file_name), outdata, delimiter = delimiter)
 
-    def plotEvidences(image_file, scaled = True, log = False, ratio = True,
+    def plotEvidences(self, image_file, scaled = True, log = False, ratio = True,
                       line_colours = [],
                       line_styles = [],
                       legend_pos = _DEFAULT_LEGEND_POS,
@@ -215,9 +215,9 @@ class BruteABC:
         plt.ylabel(y_label)
         legend = plt.legend(loc = legend_pos, shadow = True)
         plt.xlim([0, 1])
-        plt.savefig(image_file)
+        plt.savefig(self.mkname(image_file))
 
-    def plotEvidence(png_file,
+    def plotEvidence(self, png_file,
                      line_colours = [],
                      line_styles = [],
                      legend_pos = _DEFAULT_LEGEND_POS,
@@ -227,7 +227,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotEvidenceRatio(png_file,
+    def plotEvidenceRatio(self, png_file,
                           line_colours = [],
                           line_styles = [],
                           legend_pos = _DEFAULT_LEGEND_POS,
@@ -237,7 +237,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotLogEvidence(png_file,
+    def plotLogEvidence(self, png_file,
                         line_colours = [],
                         line_styles = [],
                         legend_pos = _DEFAULT_LEGEND_POS,
@@ -247,7 +247,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotLogEvidenceRatio(png_file,
+    def plotLogEvidenceRatio(self, png_file,
                              line_colours = [],
                              line_styles = [],
                              legend_pos = _DEFAULT_LEGEND_POS,
@@ -257,7 +257,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledEvidence(png_file,
+    def plotScaledEvidence(self, png_file,
                            line_colours = [],
                            line_styles = [],
                            legend_pos = _DEFAULT_LEGEND_POS,
@@ -267,7 +267,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledEvidenceRatio(png_file,
+    def plotScaledEvidenceRatio(self, png_file,
                                 line_colours = [],
                                 line_styles = [],
                                 legend_pos = _DEFAULT_LEGEND_POS,
@@ -277,7 +277,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledLogEvidence(png_file,
+    def plotScaledLogEvidence(self, png_file,
                               line_colours = [],
                               line_styles = [],
                               legend_pos = _DEFAULT_LEGEND_POS,
@@ -287,7 +287,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def plotScaledLogEvidenceRatio(png_file,
+    def plotScaledLogEvidenceRatio(self, png_file,
                                    line_colours = [],
                                    line_styles = [],
                                    legend_pos = _DEFAULT_LEGEND_POS,
@@ -297,7 +297,7 @@ class BruteABC:
                            line_colours, line_styles, legend_pos, x_label,
                            y_label)
 
-    def squareDiff(x, j):
+    def squareDiff(self, x, j):
         """
         Called from computeScales(), this method returns the sum of squared
         difference between an evidence curve for a metric and the evidence curve
@@ -313,7 +313,7 @@ class BruteABC:
             thissum += diff * diff
         return(thissum)
 
-    def logSquareDiff(x, j):
+    def logSquareDiff(self, x, j):
         """
         Called from computeScales(), this method returns the sum of squared
         difference between a log-evidence curve for a metric and the log-
@@ -325,13 +325,13 @@ class BruteABC:
             if(indx > self.epsteps):
                 diff = self.logevidences[0][i]
             else:
-	        if(indx == 0):
+                if(indx == 0):
                     indx = 1
-	            diff = (self.logevidences[0][i] - self.logevidences[j][indx])
+                    diff = (self.logevidences[0][i] - self.logevidences[j][indx])
             thissum += diff * diff
         return(thissum)
 
-    def computeScales():
+    def computeScales(self):
         """
         Finds the epsilon scaling factor at which the sum of squared difference
         between the evidence (and log-evidence) curve for each metric and the
@@ -360,7 +360,7 @@ class BruteABC:
                 self.logoptscales[j] = logres.x
         self.scales_computed = True
 
-    def trianglePlots(file_name):
+    def trianglePlots(self, file_name):
         """
         Save triangle plots of the posteriors to the file_name.
         """
@@ -368,15 +368,16 @@ class BruteABC:
         for j in range(self.n_metrics):
             postsamples = self.df[np.fabs(self.df[self.headers[j]])
                                   < self.refeps * self.initscales[j] * self.logoptscales[j] ]
-    	plotsamps = np.array(postsamples[self.params])[:, 0:len(self.params)]
-    	if len(plotsamps[:, 0]) > len(self.params):
-    	    fig = triangle.corner(plotsamps, labels = self.params)
-    	    fig.savefig(file_name, dpi = 150)
-    	else:
-    	    print "Number of valid samples for metric ", j + 1, \
-                  " is too small to make a plot, skipping....."
+            plotsamps = np.array(postsamples[self.params])[:, 0:len(self.params)]
+            if len(plotsamps[:, 0]) > len(self.params):
+                fig = triangle.corner(plotsamps, labels = self.params)
+                fig.savefig(self.mkname(file_name), dpi = 150)
+            else:
+                print "Number of valid samples (", len(plotsamps[:, 0]), \
+                ") for metric", j + 1, \
+                "is too small to make a plot, skipping....."
 
-    def posteriorPlots(file_stem):
+    def posteriorPlots(self, file_stem):
         """
         Save plots of the posteriors (as histograms), one per parameter
         to a file name composed as file_stem_parameter.png
@@ -388,31 +389,37 @@ class BruteABC:
             plotsamps = np.array(postsamples[self.params])[:, 0:len(self.params)]
             for k in range(len(self.params)):
                 plt.figure(k + 1)
-        	if len(plotsamps[:, 0]) > len(self.params):
-        	    plt.hist(plotsamps[:,k], 50,
-                         label = 'Metric %i (%s)'%(j + 1, self.headers[j]),
-                         alpha = 0.5, normed = True)
+                if len(plotsamps[:, 0]) > len(self.params):
+                    plt.hist(plotsamps[:,k], 50,
+                             label = 'Metric %i (%s)'%(j + 1, self.headers[j]),
+                             alpha = 0.5, normed = True)
 
         for k in range(len(self.params)):
             plt.figure(k + 1)
             plt.legend(loc = 'best', shadow = False)
             plt.title('Posterior comparison: %s'%(self.params[k]))
-            plt.savefig('%s_%s.png'%(file_stem, params[k]))
+            plt.savefig(self.mkname('%s_%s.png'%(file_stem, self.params[k])))
 
+    @staticmethod
+    def mkname(filename):
+        rename = filename
+        for chr in ";:<>?/\\\"\'|`{}[]#$^&*()":
+            rename = rename.replace(chr, "_")
+        return(rename)
 
 if __name__ == "__main__":
-    df = pd.read_csv(sys.args[1], sep = ',', header = 0)
-    metrics = pd.read_csv(sys.args[2], sep = ',', header = 0)
-    params = pd.read_csv(sys.args[3], sep = ',', header = 0)
+    df = pd.read_csv(sys.argv[1], sep = ',', header = 0)
+    metrics = pd.read_csv(sys.argv[2], sep = ',', header = 0)
+    params = pd.read_csv(sys.argv[3], sep = ',', header = 0)
 
     brute = BruteABC(df, params, metrics)
-    brute.saveEvidences(sys.args[4])
-    brute.saveEvidenceRatios(sys.args[5])
+    brute.saveEvidences(sys.argv[4])
+    brute.saveEvidenceRatios(sys.argv[5])
 
-    if(len(sys.args) > 5):
-        brute.plotScaledLogEvidenceRatios(sys.args[6])
-        brute.plotScaledEvidenceRatios(sys.args[7])
-        brute.trianglePlots(sys.args[8])
-        brute.posteriorPlots(sys.args[9])
+    if(len(sys.argv) > 5):
+        brute.plotScaledLogEvidenceRatio(sys.argv[6])
+        brute.plotScaledEvidenceRatio(sys.argv[7])
+        brute.trianglePlots(sys.argv[8])
+        brute.posteriorPlots(sys.argv[9])
 
     sys.exit(0)
