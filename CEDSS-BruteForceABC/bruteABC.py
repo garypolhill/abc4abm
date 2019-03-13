@@ -32,10 +32,12 @@ When run as a script, it expects the following inputs:
 
 3. A parameter metadata file in CSV format with column headings:
 
-   The first line should be 'parameter,type'
+   The first line should be 'parameter,type,setting,minimum,maximum'
 
    One row for each parameter. The parameter name should match exactly one
-   column heading in the data file. The type value is ignored by this script.
+   column heading in the data file. Minimum and maximum are needed for
+   checking which parameters actually change. Type is needed for determining
+   numeric parameters. Setting is ignored.
 
 Outputs:
 
@@ -82,6 +84,7 @@ from collections import Counter
 
 _DEFAULT_EPSTEPS = 100
 _DEFAULT_MAXEP = 1.0
+_DEFAULT_REFEPS = 0.05
 _DEFAULT_LEGEND_POS = 'upper right'
 _DEFAULT_EP_LABEL = r'$\epsilon_i$'
 _DEFAULT_EVIDENCE_LABEL = r'${\cal Z}$'
@@ -99,27 +102,44 @@ class BruteABC:
     for saving and plotting the data.
     """
     def __init__(self, df, params, metrics, epsteps = _DEFAULT_EPSTEPS,
-                 maxep = _DEFAULT_MAXEP, rescale = False):
+                 maxep = _DEFAULT_MAXEP, refeps = _DEFAULT_REFEPS, rescale = False):
         self.df = df
-        self.params = [params['parameter'][i] for i in range(len(params))]
+        n_dyn_parm = 0
+        for i in range(len(params)):
+            if (params['minimum'][i] != params['maximum'][i]) \
+                and params['type'][i] == 'numeric':
+                n_dyn_parm = n_dyn_parm + 1
+        self.params = ["NA" for i in range(n_dyn_parm)]
+        j = 0
+        for i in range(len(params)):
+            if params['minimum'][i] != params['maximum'][i] \
+                and params['type'][i] == 'numeric':
+                self.params[j] = params['parameter'][i]
+                j = j + 1
+
         self.n_metrics = len(metrics)
         self.headers = [metrics['metric'][i] for i in range(self.n_metrics)]
         self.calibvals = [metrics['target'][i] for i in range(self.n_metrics)]
         self.minima = [metrics['minimum'][i] for i in range(self.n_metrics)]
         self.maxima = [metrics['maximum'][i] for i in range(self.n_metrics)]
         self.rescale = rescale
+        self.targets = pd.DataFrame(df.loc[:, self.headers])
+        self.difima = [self.maxima[i] - self.minima[i] for i in range(self.n_metrics)]
 
         for i in range(self.n_metrics):
             if metrics['operator'][i] == "log":
                 self.calibvals[i] = np.log(self.calibvals[i])
                 self.minima[i] = np.log(self.minima[i])
                 self.maxima[i] = np.log(self.maxima[i])
+                self.difima[i] = np.log(self.difima[i])
                 self.df.loc[:, self.headers[i]] = np.log(self.df[self.headers[i]].to_numpy())
+            for k in range(len(df.index)):
+                self.targets.iloc[k, i] \
+                    = (self.targets.iloc[k, i] - self.calibvals[i]) / self.difima[i]
 
-        self.difima = [self.maxima[i] - self.minima[i] for i in range(self.n_metrics)]
         self.epsteps = epsteps
         self.epsilons = [1.0 * (maxep / epsteps) * i for i in range(epsteps + 1)]
-        self.refeps = self.epsilons[1]
+        self.refeps = refeps
         self.evidences = np.zeros(self.n_metrics * (epsteps + 1))
         self.evidences = self.evidences.reshape(self.n_metrics, epsteps + 1)
         self.evratio = np.zeros(self.n_metrics * (epsteps + 1))
@@ -137,8 +157,8 @@ class BruteABC:
             for j in range(self.n_metrics):
                 self.evidences[j][i] \
                     = sum(1.0 for val in 1.0 * np.array(self.df[self.headers[j]])
-                        if np.fabs((val - self.minima[j]) / self.difima[j])
-                            < self.epsilons[i]) / 1.0 * len(self.df[self.headers[j]])
+                          if self.inEpsilonBox(val, self.epsilons[i], j)
+                          ) / (1.0 * len(self.df[self.headers[j]]))
                 if i > 0:
                     self.evratio[j][i] = self.evidences[j][i] / self.epsilons[i]
                 self.moments[j] = self.moments[j] + self.evidences[j][i] * self.epsilons[i]
@@ -147,15 +167,21 @@ class BruteABC:
                     self.logmoments[j] \
                         = self.logmoments[j] + self.logevidences[j][i] * self.epsilons[i]
 
+    def inEpsilonBox(self, value, epsilon, metric):
+        return (np.fabs((value - self.calibvals[metric]) / self.difima[metric])
+                < epsilon)
+
     def saveEvidences(self, file_name, delimiter = ","):
         """
         Save the evidences to the file (CSV format by default)
         """
         outdata = np.array(np.reshape(self.epsilons, (self.epsteps + 1, 1)))
         for j in range(self.n_metrics):
-            np.append(outdata, np.reshape(self.evidences[j], (self.epsteps + 1, 1)),
-                      axis = 1)
-        np.savetxt(self.mkname(file_name), outdata, delimiter = delimiter)
+            outdata = np.append(outdata,
+                                np.reshape(self.evidences[j], (self.epsteps + 1, 1)),
+                                axis = 1)
+        np.savetxt(self.mkname(file_name), outdata, delimiter = delimiter,
+                   header = "epsilon," + ",".join(self.headers))
 
     def saveEvidenceRatios(self, file_name, delimiter = ","):
         """
@@ -163,9 +189,11 @@ class BruteABC:
         """
         outdata = np.array(np.reshape(self.epsilons, (self.epsteps + 1, 1)))
         for j in range(self.n_metrics):
-            np.append(outdata, np.reshape(self.evratio[j], (self.epsteps + 1, 1)),
-                      axis = 1)
-        np.savetxt(self.mkname(file_name), outdata, delimiter = delimiter)
+            outdata = np.append(outdata,
+                                np.reshape(self.evratio[j], (self.epsteps + 1, 1)),
+                                axis = 1)
+        np.savetxt(self.mkname(file_name), outdata, delimiter = delimiter,
+                   header = "epsilon," + ",".join(self.headers))
 
     def plotEvidences(self, image_file, scaled = True, log = False, ratio = True,
                       line_colours = [],
@@ -204,7 +232,7 @@ class BruteABC:
                     data = self.evratio[j]
             else:           # not ratio
                 if log:
-                    data = np.log(self.evidences[j])
+                    data = self.logevidences[j]
                 else:       # not log
                     data = self.evidences[j]
 
@@ -216,6 +244,7 @@ class BruteABC:
         legend = plt.legend(loc = legend_pos, shadow = True)
         plt.xlim([0, 1])
         plt.savefig(self.mkname(image_file))
+        plt.close()
 
     def plotEvidence(self, png_file,
                      line_colours = [],
@@ -325,9 +354,7 @@ class BruteABC:
             if(indx > self.epsteps):
                 diff = self.logevidences[0][i]
             else:
-                if(indx == 0):
-                    indx = 1
-                    diff = (self.logevidences[0][i] - self.logevidences[j][indx])
+                diff = (self.logevidences[0][i] - self.logevidences[j][indx])
             thissum += diff * diff
         return(thissum)
 
@@ -366,8 +393,10 @@ class BruteABC:
         """
         self.computeScales()
         for j in range(self.n_metrics):
-            postsamples = self.df[np.fabs(self.df[self.headers[j]])
-                                  < self.refeps * self.initscales[j] * self.logoptscales[j] ]
+#            postsamples = self.df[np.fabs(self.df[self.headers[j]])
+#                                  < self.refeps * self.initscales[j] * self.logoptscales[j] ]
+            postsamples = self.df[np.fabs(self.targets[self.headers[j]])
+                                  < self.refeps * self.initscales[j] * self.logoptscales[j]]
             plotsamps = np.array(postsamples[self.params])[:, 0:len(self.params)]
             if len(plotsamps[:, 0]) > len(self.params):
                 fig = triangle.corner(plotsamps, labels = self.params)
@@ -384,8 +413,10 @@ class BruteABC:
         """
         self.computeScales()
         for j in range(self.n_metrics):
-            postsamples = self.df[np.fabs(self.df[self.headers[j]])
-                                  < self.refeps * self.initscales[j] * self.logoptscales[j] ]
+#            postsamples = self.df[np.fabs(self.df[self.headers[j]])
+#                                  < self.refeps * self.initscales[j] * self.logoptscales[j] ]
+            postsamples = self.df[np.fabs(self.targets[self.headers[j]])
+                                  < self.refeps * self.initscales[j] * self.logoptscales[j]]
             plotsamps = np.array(postsamples[self.params])[:, 0:len(self.params)]
             for k in range(len(self.params)):
                 plt.figure(k + 1)
