@@ -168,6 +168,9 @@ class BruteABC:
                         = self.logmoments[j] + self.logevidences[j][i] * self.epsilons[i]
 
     def inEpsilonBox(self, value, epsilon, metric):
+        """
+        Return whether a value is within an epsilon of a metric
+        """
         return (np.fabs((value - self.calibvals[metric]) / self.difima[metric])
                 < epsilon)
 
@@ -406,7 +409,7 @@ class BruteABC:
                 ") for metric", j + 1, \
                 "is too small to make a plot, skipping....."
 
-    def posteriorPlots(self, file_stem):
+    def posteriorPlots(self, file_stem, suffix):
         """
         Save plots of the posteriors (as histograms), one per parameter
         to a file name composed as file_stem_parameter.png
@@ -429,7 +432,7 @@ class BruteABC:
             plt.figure(k + 1)
             plt.legend(loc = 'best', shadow = False)
             plt.title('Posterior comparison: %s'%(self.params[k]))
-            plt.savefig(self.mkname('%s_%s.png'%(file_stem, self.params[k])))
+            plt.savefig(self.mkname('%s_%s.%s'%(file_stem, self.params[k], suffix)))
 
     @staticmethod
     def mkname(filename):
@@ -439,6 +442,14 @@ class BruteABC:
         return(rename)
 
 if __name__ == "__main__":
+    if(len(sys.argv) < 5):
+        sys.stderr.write("Usage: bruteABC.py <run data> <metrics file> "
+                         + "<parameter file> <save evidence file> "
+                         + "<save evidence ratio file> [<plot log evidence "
+                         + "ratio file> <plot evidence ratio file> <triangle "
+                         + "plots file> <posterior plots file (no suffix)>]\n")
+        sys.exit(1)
+
     df = pd.read_csv(sys.argv[1], sep = ',', header = 0)
     metrics = pd.read_csv(sys.argv[2], sep = ',', header = 0)
     params = pd.read_csv(sys.argv[3], sep = ',', header = 0)
@@ -448,9 +459,10 @@ if __name__ == "__main__":
     brute.saveEvidenceRatios(sys.argv[5])
 
     if(len(sys.argv) > 5):
+        suffix = (sys.argv[6])[-3:]
         brute.plotScaledLogEvidenceRatio(sys.argv[6])
         brute.plotScaledEvidenceRatio(sys.argv[7])
         brute.trianglePlots(sys.argv[8])
-        brute.posteriorPlots(sys.argv[9])
+        brute.posteriorPlots(sys.argv[9], suffix)
 
     sys.exit(0)

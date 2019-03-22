@@ -1,6 +1,59 @@
 #!/usr/bin/python
 """nlogo.py
-This module contains classes for reading and working with a NetLogo file
+This module contains classes for reading and working with a NetLogo model.
+Run from the command line, it can be used to:
+
+* Extract all the parameters from the model's GUI tab into a CSV file
+  (This can then be used in a subsequent call to create an experiment)
+
+  ./nlogo.py <nlogo file> param <file to save parameters to>
+
+* Print a list of the experiments from the model's behaviour space
+
+  ./nlogo.py <nlogo file> expt
+
+* Prepare a Monte Carlo sample of parameter space
+
+  ./nlogo.py <nlogo file> monte <parameter file> <tick number to stop at>
+                                <number of samples> <experiment XML file>
+
+  Note: if the number of samples is large, the XML library used by NetLogo
+  to read in the experiment file can cause out-of-memory and garbage
+  collection errors, or result in the model taking a long time to run. Use
+  number of samples > 10000 with caution.
+
+  The created experiment file automatically collects data from plot pens
+  and monitors each step.
+
+* Prepare a Monte Carlo sample of parameter space with a shell script to
+  run all the options with Sun Grid Engine
+
+  ./nlogo.py <nlogo file> montq <parameter file> <tick number to stop at>
+                                <number of samples> <experiment XML file>
+                                <file to save SGE submission script to>
+
+  You can then submit the jobs with qsub <SGE submission script>
+
+A typical workflow would be to run this with param and then montq, before
+qsubbing the submission script. Once you've extracted the results you want
+from the outputs, you could then use, for example bruteABC.py to analyse
+the results.
+
+Other potentially useful tools (for future implementation)
+
+* Extract and collate outputs from NetLogo experiments in an XML file
+
+* Automatically split up large sample sizes for monte and montq into
+  chunks of, say, 20000 runs at a time.
+
+* Creata a qsub script to run a BehaviorSpace experiment in parallel
+
+* Parse code and do things with it, like extracting an ontology, or UML
+  diagrams
+
+* Automatically add a licence (e.g. GNU GPL) section to the Info tab
+
+* Check progress with experiment runs by looking for output files
 """
 # Copyright (C) 2018  The James Hutton Institute & University of Edinburgh
 #
@@ -30,6 +83,10 @@ import xml.etree.ElementTree as xml
 # Classes
 
 class Widget:
+    """
+    The Widget class is a top-level class for all of the items that you can
+    put on the GUI tab of a NetLogo model.
+    """
     type = "<<UNDEF>>"
     def __init__(self, type, left, top, right, bottom, display, parameter,
                  output, info):
@@ -45,6 +102,10 @@ class Widget:
 
     @staticmethod
     def read(fp):
+        """
+        Reads the widgets section from a NetLogo file, returning an array
+        of widgets read
+        """
         typestr = fp.readline()
         widgets = []
         while(typestr[0:-1] != "@#$#@#$#@"):
@@ -85,6 +146,9 @@ class Widget:
 
 
 class GraphicsWindow(Widget):
+    """
+    The GraphicsWindow class is a subclass of Widget that contains the space
+    """
     type = "GRAPHICS-WINDOW"
     def __init__(self, left, top, right, bottom, patch_size, font_size, x_wrap,
                  y_wrap, min_pxcor, max_pxcor, min_pycor, max_pycor, update_mode,
@@ -139,6 +203,9 @@ class GraphicsWindow(Widget):
 
 
 class Button(Widget):
+    """
+    The Button class is a subclass of Widget containing a button
+    """
     type = "BUTTON"
     def __init__(self, left, top, right, bottom, display, code, forever,
                  button_type, action_key, always_enable):
@@ -172,6 +239,10 @@ class Button(Widget):
                       button_type, action_key, always_enable)
 
 class Parameter(Widget):
+    """
+    The Parameter class is an abstract subclass of Widget for all parameter widgets.
+    Subclasses include Slider, Switch, Chooser and InputBox
+    """
     def __init__(self, type, left, top, right, bottom, display):
         Widget.__init__(self, type, left, top, right, bottom, display, True, False, False)
         self.varname = '<<UNDEF>>'
@@ -192,14 +263,25 @@ class Parameter(Widget):
         self.value = value
 
 class Output(Widget):
+    """
+    The Output class is an abstract subclass of Widget containing some output.
+    Subclasses include Plot, Monitor and OutputArea
+    """
     def __init__(self, type, left, top, right, bottom, display):
         Widget.__init__(self, type, left, top, right, bottom, display, False, True, False)
 
 class Info(Widget):
+    """
+    The Info class is an abstract subclass of Widget containing information.
+    TextBox is the subclass of Info.
+    """
     def __init__(self, type, left, top, right, bottom, display):
         Widget.__init__(self, type, left, top, right, bottom, display, False, False, True)
 
 class Plot(Output):
+    """
+    Plot widget
+    """
     type = "PLOT"
     def __init__(self, left, top, right, bottom, display, xaxis, yaxis, xmin,
                  xmax, ymin, ymax, autoplot_on, legend_on, code1, code2):
@@ -250,6 +332,9 @@ class Plot(Output):
         return self.pens.values()
 
 class Pen:
+    """
+    The Pen class contains data for each pen of a Plot
+    """
     def __init__(self, display, interval, mode, colour, in_legend, setup_code,
                  update_code):
         self.display = display
@@ -281,6 +366,9 @@ class Pen:
         return Pen(display, interval, mode, colour, in_legend, setup_code, update_code)
 
 class TextBox(Info):
+    """
+    TextBox is an Info containing some text
+    """
     type = "TEXTBOX"
     def __init__(self, left, top, right, bottom, display, font_size, colour,
                  transparent):
@@ -304,6 +392,9 @@ class TextBox(Info):
                        transparent)
 
 class Switch(Parameter):
+    """
+    Switch Parameter widget
+    """
     type = "SWITCH"
     def __init__(self, left, top, right, bottom, display, varname, on):
         Parameter.__init__(self, Switch.type, left, top, right, bottom, display)
@@ -327,6 +418,9 @@ class Switch(Parameter):
         return Switch(left, top, right, bottom, display, varname, on)
 
 class Chooser(Parameter):
+    """
+    Chooser Parameter widget
+    """
     type = "CHOOSER"
     def __init__(self, left, top, right, bottom, display, varname, choices,
                  selection):
@@ -369,6 +463,9 @@ class Chooser(Parameter):
 
 
 class Slider(Parameter):
+    """
+    Slider Parameter widget
+    """
     type = "SLIDER"
     def __init__(self, left, top, right, bottom, display, varname, min, max,
                  default, step, units, orientation):
@@ -402,6 +499,9 @@ class Slider(Parameter):
                       default, step, units, orientation)
 
 class Monitor(Output):
+    """
+    Monitor Output Widget
+    """
     type = "MONITOR"
     def __init__(self, left, top, right, bottom, display, source, precision,
                  font_size):
@@ -425,6 +525,9 @@ class Monitor(Output):
                        font_size)
 
 class OutputArea(Output):
+    """
+    OutputArea Output widget
+    """
     type = "OUTPUT"
     def __init__(self, left, top, right, bottom, font_size):
         Output.__init__(self, OutputArea.type, left, top, right, bottom, "")
@@ -439,6 +542,9 @@ class OutputArea(Output):
         return Output(left, top, right, bottom, font_size)
 
 class InputBox(Parameter):
+    """
+    InputBox Parameter widget
+    """
     type = "INPUTBOX"
     def __init__(self, left, top, right, bottom, varname, value, multiline,
                  datatype):
@@ -470,6 +576,10 @@ class InputBox(Parameter):
                         datatype)
 
 class BahaviorSpaceXMLError(Exception):
+    """
+    Exception class for when there is unexpected content in the BehaviorSpace
+    section of a NetLogo file.
+    """
     def __init__(self, file, expected, found):
         self.file = file
         self.expected = exected
@@ -479,6 +589,10 @@ class BahaviorSpaceXMLError(Exception):
         return "BehaviorSpace XML format error in file %s: expected \"%s\", found \"%s\""%(self.file, self.expected, self.found)
 
 class SteppedValue:
+    """
+    A class containing data from a stepped value parameter exploration in a
+    BehaviorSpace
+    """
     def __init__(self, variable, first, step, last):
         self.variable = variable
         self.first = first
@@ -493,6 +607,10 @@ class SteppedValue:
                             float(xml.get("step")), float(xml.get("last")))
 
 class EnumeratedValue:
+    """
+    A class containing data from an enumerated value parameter exploration
+    in a BehaviorSpace
+    """
     def __init__(self, variable, values):
         self.variable = variable
         if isinstance(values, list):
@@ -516,6 +634,9 @@ class EnumeratedValue:
         return EnumeratedValue(variable, values)
 
 class Experiment:
+    """
+    Class containing data from a single BehaviorSpace experiment
+    """
     def __init__(self, name, setup, go, final, time_limit, exit_condition,
                  metrics, stepped_values = [], enumerated_values = [],
                  repetitions = 1, sequential_run_order = True,
@@ -535,6 +656,10 @@ class Experiment:
 
     @staticmethod
     def fromXMLString(str, file_name):
+        """
+        Parse a full <experiments>...</experiments> XML string into an
+        array of Experiments, which is returned
+        """
         experiments = []
         if str == None or str.strip() == "":
             return []
@@ -604,6 +729,11 @@ class Experiment:
 
     @staticmethod
     def fromWidgets(widgets, name, stop):
+        """
+        Create an Experiment object from the parameter and output widgets on
+        the GUI. Current parameter settings on the GUI will be used as the
+        parameter values, and outputs used as metrics.
+        """
         setup = ""
         go = ""
         outputs = []
@@ -632,6 +762,10 @@ class Experiment:
         return expt
 
     def withParameterSettings(self, param):
+        """
+        Return a new Experiment the same as this one, but using the parameter
+        settings contained in the param array
+        """
         new_enum_set = []
         for p in param:
             if isinstance(p, Parameter):
@@ -649,6 +783,10 @@ class Experiment:
                           self.runMetricsEveryStep)
 
     def withSamples(self, samples):
+        """
+        Create an experiment from this one, changing the parameter settings to
+        be set randomly from the array of samples passed as argument
+        """
         param = {}
         for s in samples:
             name = s.param.variable()
@@ -657,6 +795,11 @@ class Experiment:
         return self.withParameterSettings(param)
 
     def withNSamples(self, samples, n, final_save = False):
+        """
+        Create an array of experiments from this one, changing the parameter
+        settings such that each is set randomly from the array of samples
+        passed as argument
+        """
         expts = []
         for i in range(0, n):
             new_name = "%s-%0*d" % (self.name, (1 + int(math.log10(n))), i)
@@ -669,16 +812,25 @@ class Experiment:
 
     @staticmethod
     def writeExperimentHeader(fp):
+        """
+        Write the XML header to save the experiments as an XML file
+        """
         fp.write(u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
         fp.write(u"<!DOCTYPE experiments SYSTEM \"behaviorspace.dtd\">\n")
         fp.write(u"<experiments>\n")
 
     @staticmethod
     def writeExperimentFooter(fp):
+        """
+        Write the XML footer to save the experiments as an XML file
+        """
         fp.write(u"</experiments>\n")
 
     @staticmethod
     def writeExperiments(file_name, expts):
+        """
+        Save an array of experiments as an XML file
+        """
         try:
             fp = io.open(file_name, "w")
         except IOError as e:
@@ -696,6 +848,9 @@ class Experiment:
         return True
 
     def writeExperimentDetails(self, fp):
+        """
+        Write the XML encoding of this Experiment to the file pointer fp
+        """
         fp.write(u"  <experiment name=\"%s\" repetitions=\"%d\" sequentialRunOrder=\"%s\" runMetricsEveryStep=\"%s\">\n"
                  %(self.name, self.repetitions,
                    "true" if self.sequentialRunOrder else "false",
@@ -726,6 +881,9 @@ class Experiment:
         fp.write(u"  </experiment>\n")
 
     def escape(self, str):
+        """
+        Escape ampersands, quotes and inequalities when writing XML data
+        """
         return str.replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
 
     def writeExperiment(self, file_name):
