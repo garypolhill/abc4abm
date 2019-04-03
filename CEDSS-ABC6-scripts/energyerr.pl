@@ -14,6 +14,14 @@ my $appliances_word = "appliance";
 				# Constant to adjust if headers of
                                 # calibration files change
 my $space_word = "space";	# Ditto
+my $water_word = "water";	# Ditto
+
+my $use_water = 0;
+
+if($ARGV[0] eq '--with-water') {
+  $use_water = 1;
+  shift(@ARGV);
+}
 
 if(scalar(@ARGV) < 2) {
   die "Usage: $0 <calibration file> <XML files...>\n";
@@ -55,7 +63,9 @@ my $rw_space_energy = 0;
 my $rw_energy_total = 0;
 for(my $i = 0; $i <= $#keys; $i++) {
   if($keys[$i] =~ /./ && $values[$i] =~ /./) {
-    $calib{$keys[$i]} = $values[$i];
+    if($use_water || $keys[$i] !~ /$water_word/) {
+      $calib{$keys[$i]} = $values[$i];
+    }
   }
   if($keys[$i] =~ /$appliances_word/) {
     push(@appliance_keys, $keys[$i]);
@@ -65,7 +75,9 @@ for(my $i = 0; $i <= $#keys; $i++) {
     push(@space_keys, $keys[$i]);
     $rw_space_energy += $values[$i];
   }
-  $rw_energy_total += $values[$i];
+  if($use_water || $keys[$i] !~ /$water_word/) {
+    $rw_energy_total += $values[$i];
+  }
 }
 my $rw_appliance_ratio;
 
