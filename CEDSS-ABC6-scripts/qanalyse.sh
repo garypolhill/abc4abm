@@ -18,7 +18,7 @@ LS="$TOPDIR/$SCRIPTDIR/cedss-abc4.ls"
 LL4=`wc -l $LS`			# Number of (ABC4) tar files with results in
 RUN=$SGE_TASK_ID
 
-if [[ $RUN -gt $LL4 ]]
+if [[ "$SGE_TASK_ID" -gt "$LL4" ]]
 then
     # Run out of ABC4 runs, so switch to ABC6
     
@@ -36,7 +36,7 @@ RUNDIR=`basename $FULDIR`
 
 if [[ ! -e "$TOPDIR/$ABCDIR/$VALFILE" ]]
 then
-    cp $TOPDIR/$SCRIPTDIR/$VALFIE $TOPDIR/$ABCDIR
+    cp $TOPDIR/$SCRIPTDIR/$VALFILE $TOPDIR/$ABCDIR
     cp $TOPDIR/$SCRIPTDIR/$ERRSCRIPT $TOPDIR/$ABCDIR
 fi
 
