@@ -15,7 +15,7 @@ ERRSCRIPT="energyerr.pl"
 
 # Default to the ABC4 runs
 LS="$TOPDIR/$SCRIPTDIR/cedss-abc4.ls"
-LL4=`wc -l $LS`			# Number of (ABC4) tar files with results in
+LL4=`wc -l $LS | awk '{print $1}` # Number of (ABC4) tar files with results in
 RUN=$SGE_TASK_ID
 
 if [[ "$SGE_TASK_ID" -gt "$LL4" ]]
