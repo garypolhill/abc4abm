@@ -88,6 +88,7 @@ _DEFAULT_REFEPS = 0.05
 _DEFAULT_LEGEND_POS = 'upper right'
 _DEFAULT_EP_LABEL = r'$\epsilon_i$'
 _DEFAULT_EVIDENCE_LABEL = r'${\cal Z}$'
+_DEFAULT_FONT_SIZE = 'small'
 _LOGRES_LOWER_BOUND = 0
 _LOGRES_UPPER_BOUND = 10
 _DEFAULT_LINE_COLOURS = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99',
@@ -203,7 +204,8 @@ class BruteABC:
                       line_styles = [],
                       legend_pos = _DEFAULT_LEGEND_POS,
                       x_label = _DEFAULT_EP_LABEL,
-                      y_label = _DEFAULT_EVIDENCE_LABEL):
+                      y_label = _DEFAULT_EVIDENCE_LABEL,
+                      font_size = _DEFAULT_FONT_SIZE):
         """
         Plot the evidences, saving the graph to the image_file. Various options
         are provided to (a) scale the epsilon axis (or not); (b) plot
@@ -239,12 +241,14 @@ class BruteABC:
                 else:       # not log
                     data = self.evidences[j]
 
-            plt.plot(xdata, (data),
+            plt.plot(xdata, (data), linewidth = 2,
                      linestyle = line_styles[j], color = line_colours[j],
                      label = 'Metric %i (%s)'%(j + 1, self.headers[j]))
         plt.xlabel(x_label)
         plt.ylabel(y_label)
-        legend = plt.legend(loc = legend_pos, shadow = True)
+        legend = plt.legend(loc = legend_pos, shadow = False, frameon = False,
+                            fontsize = font_size, markerfirst = False)
+        plt.plot([0, 1], [1, 1], linestyle = 'dashed', color = '#000000')
         plt.xlim([0, 1])
         plt.savefig(self.mkname(image_file))
         plt.close()
