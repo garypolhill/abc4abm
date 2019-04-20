@@ -20,7 +20,7 @@ When run as a script, it expects the following inputs:
 
 2. A metric metadata file in CSV format with column headings:
 
-   The first line should be 'metric,target,minimum,maximum,operator'
+   The first line should be 'metric,display,target,minimum,maximum,operator'
 
    One row for each metric. The metric name should match exactly one column
    heading in the data file. The target is the target value for the metric
@@ -32,7 +32,7 @@ When run as a script, it expects the following inputs:
 
 3. A parameter metadata file in CSV format with column headings:
 
-   The first line should be 'parameter,type,setting,minimum,maximum'
+   The first line should be 'parameter,display,type,setting,minimum,maximum'
 
    One row for each parameter. The parameter name should match exactly one
    column heading in the data file. Minimum and maximum are needed for
@@ -48,11 +48,11 @@ Outputs:
 
 Authors: Jonathan Gair (University of Edinburgh)
          and Gary Polhill (The James Hutton Institute)
-Date: 5 September 2018
+Date: 20 April 2019
 Uses: numpy, scipy, pandas
 Licence: GNU General Public Licence v3 (see comments)
 """
-# Copyright (C) 2018  The James Hutton Institute & University of Edinburgh
+# Copyright (C) 2018-2019  The James Hutton Institute & University of Edinburgh
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public Licence as published by
@@ -73,6 +73,7 @@ __author__ = "Gary Polhill & Jonathan Gair"
 # imports needed are sys, numpy and pandas. We may need scipy/optimize too,
 # depending on how the epsilon scaling issue is resolved.
 import sys
+import os.path
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -111,15 +112,19 @@ class BruteABC:
                 and params['type'][i] == 'numeric':
                 n_dyn_parm = n_dyn_parm + 1
         self.params = ["NA" for i in range(n_dyn_parm)]
+        self.disp_params = ["NA" for i in range(n_dyn_parm)]
+
         j = 0
         for i in range(len(params)):
             if params['minimum'][i] != params['maximum'][i] \
                 and params['type'][i] == 'numeric':
                 self.params[j] = params['parameter'][i]
+                self.disp_params[j] = params['display'][i]
                 j = j + 1
 
         self.n_metrics = len(metrics)
         self.headers = [metrics['metric'][i] for i in range(self.n_metrics)]
+        self.disp_metrics = [metrics['display'][i] for i in range(self.n_metrics)]
         self.calibvals = [metrics['target'][i] for i in range(self.n_metrics)]
         self.minima = [metrics['minimum'][i] for i in range(self.n_metrics)]
         self.maxima = [metrics['maximum'][i] for i in range(self.n_metrics)]
@@ -267,7 +272,7 @@ class BruteABC:
 
             plt.plot(xdata, (data), linewidth = 2,
                      linestyle = line_styles[j], color = line_colours[j],
-                     label = 'Metric %i (%s)'%(j + 1, self.headers[j]))
+                     label = 'Metric %i (%s)'%(j + 1, self.disp_metrics[j]))
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         legend = plt.legend(loc = legend_pos, shadow = False, frameon = False,
@@ -477,6 +482,8 @@ class ParamOption:
         self.param = pd.read_csv(file, sep = ",", header = 0)
         self.file = file
         self.name = self.file[:-4]
+        if(self.name[:6] == 'param-'):
+            self.name = self.name[6:]
 
     def setName(name):
         self.name = name
@@ -516,15 +523,15 @@ class ParamOption:
 
         abcs = [paramopts[i].abc(data, metrics) for i in range(len(paramopts))]
 
-        for(j in range(len(metrics))):
-            for(i in range(len(abcs))):
+        for j in range(len(metrics)):
+            for i in range(len(abcs)):
                 xdata = abcs[i].epsilons(j, scaled, log)
                 data = abcs[i].evidences(j, log, ratio)
                 plt.plot(xdata, (data), linewidth = 2,
                          linestyle = '-', color = line_colours[i],
                          label = self.name)
 
-            plt.title('Metric %i (%s)'%(j + 1, metrics['metric'][j]))
+            plt.title('Metric %i (%s)'%(j + 1, metrics['display'][j]))
             plt.xlabel(x_label)
             plt.ylabel(y_label)
             legend = plt.legend(loc = legend_pos, shadow = False, frameon = False,
@@ -533,32 +540,79 @@ class ParamOption:
                 plt.plot([0, 1], [1, 1], linestyle = 'dashed', color = '#000000')
             plt.xlim([0, 1])
             plt.savefig(self.mkname('%s_%s.%s'%(image_file[:-4],
-                        metrics['metric'][j], image_file[-3:]))
+                        metrics['metric'][j], image_file[-3:])))
             plt.close()
 
 
 if __name__ == "__main__":
-    if(len(sys.argv) < 5):
-        sys.stderr.write("Usage: bruteABC.py <run data> <metrics file> "
+    if(len(sys.argv) < 6):
+        sys.stderr.write("Usage: bruteABC.py calibrate <run data> <metrics file> "
                          + "<parameter file> <save evidence file> "
                          + "<save evidence ratio file> [<plot log evidence "
                          + "ratio file> <plot evidence ratio file> <triangle "
                          + "plots file> <posterior plots file (no suffix)>]\n")
+        sys.stderr.write("\nOR   : bruteABC.py compare <run data> <metrics file> "
+                         + "<plot evidence ratio file> <parameter files...>\n")
         sys.exit(1)
 
-    df = pd.read_csv(sys.argv[1], sep = ',', header = 0)
-    metrics = pd.read_csv(sys.argv[2], sep = ',', header = 0)
-    params = pd.read_csv(sys.argv[3], sep = ',', header = 0)
+    if(sys.argv[1] == 'calibrate'):
 
-    brute = BruteABC(df, params, metrics)
-    brute.saveEvidences(sys.argv[4])
-    brute.saveEvidenceRatios(sys.argv[5])
+        if(len(sys.argv) != 6 and len(sys.argv) != 10):
+            sys.stderr.write("Usage: bruteABC.py calibrate <run data> <metrics file> "                     + "<parameter file> <save evidence file> "
+                             + "<parameter file> <save evidence file> "
+                             + "<save evidence ratio file> [<plot log evidence "
+                             + "ratio file> <plot evidence ratio file> <triangle "
+                             + "plots file> <posterior plots file (no suffix)>]\n")
+            sys.exit(1)
 
-    if(len(sys.argv) > 5):
-        suffix = (sys.argv[6])[-3:]
-        brute.plotScaledLogEvidenceRatio(sys.argv[6])
-        brute.plotScaledEvidenceRatio(sys.argv[7])
-        brute.trianglePlots(sys.argv[8])
-        brute.posteriorPlots(sys.argv[9], suffix)
+
+        if(not os.path.exists(sys.argv[2])):
+            sys.stderr.write("Run data file %s does not exist\n"%(sys.argv[2]))
+            sys.exit(1)
+
+        if(not os.path.exists(sys.argv[3])):
+            sys.stderr.write("Metrics file %s does not exist\n"%(sys.argv[3]))
+            sys.exit(1)
+
+        if(not os.path.exists(sys.argv[4])):
+            sys.stderr.write("Parameter list file %s does not exist\n"%(sys.argv[4]))
+            sys.exit(1)
+
+        df = pd.read_csv(sys.argv[2], sep = ',', header = 0)
+        metrics = pd.read_csv(sys.argv[3], sep = ',', header = 0)
+        params = pd.read_csv(sys.argv[4], sep = ',', header = 0)
+
+        brute = BruteABC(df, params, metrics)
+        brute.saveEvidences(sys.argv[5])
+        brute.saveEvidenceRatios(sys.argv[6])
+
+        if(len(sys.argv) > 6):
+            suffix = (sys.argv[7])[-3:]
+            brute.plotScaledLogEvidenceRatio(sys.argv[7])
+            brute.plotScaledEvidenceRatio(sys.argv[8])
+            brute.trianglePlots(sys.argv[9])
+            brute.posteriorPlots(sys.argv[10], suffix)
+
+    if(sys.argv[1] == 'compare'):
+
+        if(len(sys.argv) < 5):
+            sys.stderr.write("Usage: bruteABC.py compare <run data> <metrics file> "
+                             + "<plot evidence ratio file> <parameter files...>\n")
+            sys.exit(1)
+
+
+        if(not os.path.exists(sys.argv[2])):
+            sys.stderr.write("Run data file %s does not exist\n"%(sys.argv[2]))
+            sys.exit(1)
+
+        if(not os.path.exists(sys.argv[3])):
+            sys.stderr.write("Metrics file %s does not exist\n"%(sys.argv[3]))
+            sys.exit(1)
+
+        df = pd.read_csv(sys.argv[2], sep = ',', header = 0)
+        metrics = pd.read_csv(sys.argv[3], sep = ",", header = 0)
+        plotfile = sys.argv[4]
+        params = ParamOption.buildarray(sys.argv[5:])
+        ParamOption.plotarray(params, df, metrics, plotfile)
 
     sys.exit(0)
