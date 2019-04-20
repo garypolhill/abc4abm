@@ -92,9 +92,20 @@ _DEFAULT_EVIDENCE_LABEL = r'${\cal Z}$'
 _DEFAULT_FONT_SIZE = 'small'
 _LOGRES_LOWER_BOUND = 0
 _LOGRES_UPPER_BOUND = 10
-_DEFAULT_LINE_COLOURS = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99',
-                         '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a',
-                         '#b15928', '#ffff99']  # From colour brewer
+_DEFAULT_LINE_COLOURS = [
+                         '#1f78b4', # first
+                         '#33a02c', # second
+                         '#e31a1c', # third
+                         '#ff7f00', # fourth
+                         '#6a3d9a', # fifth
+                         '#ffff99'  # sixth
+                         '#a6cee3', # seventh
+                         '#b2df8a', # eighth
+                         '#fb9a99', # ninth
+                         '#fdbf6f', # tenth
+                         '#cab2d6', # eleventh
+                         '#b15928', # twelfth
+                         ]  # From colour brewer
 _DEFAULT_LINE_STYLE = '-'
 
 class BruteABC:
@@ -444,7 +455,7 @@ class BruteABC:
                 ") for metric", j + 1, \
                 "is too small to make a plot, skipping....."
 
-    def posteriorPlots(self, file_stem, suffix):
+    def posteriorPlots(self, file_stem, suffix, y_label = _DEFAULT_EVIDENCE_LABEL):
         """
         Save plots of the posteriors (as histograms), one per parameter
         to a file name composed as file_stem_parameter.png
@@ -461,13 +472,16 @@ class BruteABC:
                 plt.figure(k + 1)
                 if len(plotsamps[:, 0]) > len(self.params):
                     plt.hist(plotsamps[:,k], 50,
-                             label = 'Metric %i (%s)'%(j + 1, self.headers[j]),
-                             alpha = 0.75, normed = True, color = barcolours[j])
+                             label = 'Metric %i (%s)'%(j + 1, self.disp_metrics[j]),
+                             alpha = 0.5, normed = True, color = barcolours[j])
 
         for k in range(len(self.params)):
             plt.figure(k + 1)
-            plt.legend(loc = 'best', shadow = False, fontsize = _DEFAULT_FONT_SIZE, framealpha = 0.5)
-            plt.title('Posterior comparison: %s'%(self.params[k]))
+            plt.legend(loc = 'lower right', shadow = False, fontsize = _DEFAULT_FONT_SIZE,
+                       framealpha = 0.75)
+            plt.title('Posterior comparison: %s'%(self.disp_params[k]))
+            plt.xlabel(self.disp_params[k])
+            plt.ylabel(y_label)
             plt.savefig(self.mkname('%s_%s.%s'%(file_stem, self.params[k], suffix)))
 
     @staticmethod
@@ -476,6 +490,45 @@ class BruteABC:
         for chr in ";:<>?/\\\"\'|`{}[]#$^&*()":
             rename = rename.replace(chr, "_")
         return(rename)
+
+    @staticmethod
+    def ckdata(df, params, metrics, dffile, paramfile, metricfile, die = True):
+        pnames = [params['parameter'][i] for i in range(len(params))]
+        mnames = [metrics['metric'][i] for i in range(len(metrics))]
+        dfnames = [df.columns[i] for i in range(len(df.columns))]
+        for name in pnames:
+            if(dfnames.count(name) == 0):
+                sys.stderr.write("Parameter name %s in parameter file %s "
+                                 + "does not appear as a column heading in "
+                                 + "run data file %s\n"%(name, paramfile, dffile))
+                if(die):
+                    sys.exit(1)
+                return(False)
+            if(dfnames.count(name) > 1):
+                sys.stderr.write("Parameter name %s in parameter file %s "
+                                 + "appears more than once as a column heading "
+                                 + "in run data file %s\n"%(name, paramfile, dffile))
+                if(die):
+                    sys.exit(1)
+                return(False)
+
+        for name in mnames:
+            if(dfnames.count(name) == 0):
+                sys.stderr.write("Metric name %s in metric file %s "
+                                 + "does not appear as a column heading in "
+                                 + "run data file %s\n"%(name, metricfile, dffile))
+                if(die):
+                    sys.exit(1)
+                return(False)
+            if(dfnames.count(name) > 1):
+                sys.stderr.write("Metric name %s in metric file %s "
+                                 + "appears more than once as a column heading "
+                                 + "in run data file %s\n"%(name, metricfile, dffile))
+                if(die):
+                    sys.exit(1)
+                return(False)
+
+        return(True)
 
 class ParamOption:
     def __init__(self, file):
@@ -545,7 +598,7 @@ class ParamOption:
 
 
 if __name__ == "__main__":
-    if(len(sys.argv) < 6):
+    if(len(sys.argv) < 2):
         sys.stderr.write("Usage: bruteABC.py calibrate <run data> <metrics file> "
                          + "<parameter file> <save evidence file> "
                          + "<save evidence ratio file> [<plot log evidence "
@@ -557,7 +610,7 @@ if __name__ == "__main__":
 
     if(sys.argv[1] == 'calibrate'):
 
-        if(len(sys.argv) != 6 and len(sys.argv) != 10):
+        if(len(sys.argv) != 7 and len(sys.argv) != 11):
             sys.stderr.write("Usage: bruteABC.py calibrate <run data> <metrics file> "                     + "<parameter file> <save evidence file> "
                              + "<parameter file> <save evidence file> "
                              + "<save evidence ratio file> [<plot log evidence "
@@ -582,11 +635,13 @@ if __name__ == "__main__":
         metrics = pd.read_csv(sys.argv[3], sep = ',', header = 0)
         params = pd.read_csv(sys.argv[4], sep = ',', header = 0)
 
+        BruteABC.ckdata(df, params, metrics, sys.argv[2], sys.argv[4], sys.argv[5])
+
         brute = BruteABC(df, params, metrics)
         brute.saveEvidences(sys.argv[5])
         brute.saveEvidenceRatios(sys.argv[6])
 
-        if(len(sys.argv) > 6):
+        if(len(sys.argv) == 11):
             suffix = (sys.argv[7])[-3:]
             brute.plotScaledLogEvidenceRatio(sys.argv[7])
             brute.plotScaledEvidenceRatio(sys.argv[8])
@@ -595,7 +650,7 @@ if __name__ == "__main__":
 
     if(sys.argv[1] == 'compare'):
 
-        if(len(sys.argv) < 5):
+        if(len(sys.argv) < 6):
             sys.stderr.write("Usage: bruteABC.py compare <run data> <metrics file> "
                              + "<plot evidence ratio file> <parameter files...>\n")
             sys.exit(1)
@@ -613,6 +668,11 @@ if __name__ == "__main__":
         metrics = pd.read_csv(sys.argv[3], sep = ",", header = 0)
         plotfile = sys.argv[4]
         params = ParamOption.buildarray(sys.argv[5:])
+
+        for i in range(len(params)):
+            BruteABC.ckdata(df, params[i], metrics,
+                            sys.argv[2], sys.argv[5 + i], sys.argv[3])
+
         ParamOption.plotarray(params, df, metrics, plotfile)
 
     sys.exit(0)
