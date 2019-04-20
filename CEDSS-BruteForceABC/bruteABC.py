@@ -66,7 +66,7 @@ Licence: GNU General Public Licence v3 (see comments)
 #
 # You should have received a copy of the GNU General Public Licence
 # along with this program.  If not, see <https://www.gnu.org/licences/>.
-__version__ = "0.1"
+__version__ = "1.0"
 __author__ = "Gary Polhill & Jonathan Gair"
 # Imports: There are quite a lot of these, and many are only needed for
 # visualization, which should be handled by a separate module. Minimum
@@ -199,6 +199,28 @@ class BruteABC:
         np.savetxt(self.mkname(file_name), outdata, delimiter = delimiter,
                    header = "epsilon," + ",".join(self.headers))
 
+    def getEvidences(self, j, log = False, ratio = False):
+        if ratio:
+            if log:
+                return(np.log(self.evratio[j]))
+            else:
+                return(self.evratio[j])
+        else:
+            if log:
+                return(self.logevidences[j])
+            else:
+                return(self.evidences[j])
+
+    def getEpsilons(self, j = 0, scaled = False, log = False):
+        if scaled:
+            self.computeScales()
+            if log:
+                return(np.array(self.epsilons) / self.logoptscales[j])
+            else:
+                return(np.array(self.epsilons) / self.optscales[j])
+        else:
+            return(np.array(self.epsilons))
+
     def plotEvidences(self, image_file, scaled = True, log = False, ratio = True,
                       line_colours = [],
                       line_styles = [],
@@ -222,24 +244,26 @@ class BruteABC:
             self.computeScales()
 
         for j in range(self.n_metrics):
-            if scaled:
-                if log:
-                    xdata = np.array(self.epsilons) / self.logoptscales[j]
-                else:       # not log
-                    xdata = np.array(self.epsilons) / self.optscales[j]
-            else:           # not scaled
-                xdata = np.array(self.epsilons)
+            xdata = self.getEpsilons(j, scaled, log)
+            # if scaled:
+            #     if log:
+            #         xdata = np.array(self.epsilons) / self.logoptscales[j]
+            #     else:       # not log
+            #         xdata = np.array(self.epsilons) / self.optscales[j]
+            # else:           # not scaled
+            #     xdata = np.array(self.epsilons)
 
-            if ratio:
-                if log:
-                    data = np.log(self.evratio[j])
-                else:       # not log
-                    data = self.evratio[j]
-            else:           # not ratio
-                if log:
-                    data = self.logevidences[j]
-                else:       # not log
-                    data = self.evidences[j]
+            data = self.getEvidences(j, log, ratio)
+            # if ratio:
+            #     if log:
+            #         data = np.log(self.evratio[j])
+            #     else:       # not log
+            #         data = self.evratio[j]
+            # else:           # not ratio
+            #     if log:
+            #         data = self.logevidences[j]
+            #     else:       # not log
+            #         data = self.evidences[j]
 
             plt.plot(xdata, (data), linewidth = 2,
                      linestyle = line_styles[j], color = line_colours[j],
@@ -247,8 +271,9 @@ class BruteABC:
         plt.xlabel(x_label)
         plt.ylabel(y_label)
         legend = plt.legend(loc = legend_pos, shadow = False, frameon = False,
-                            fontsize = font_size, markerfirst = False)
-        plt.plot([0, 1], [1, 1], linestyle = 'dashed', color = '#000000')
+                            fontsize = font_size) #, markerfirst = False)
+        if not log:
+            plt.plot([0, 1], [1, 1], linestyle = 'dashed', color = '#000000')
         plt.xlim([0, 1])
         plt.savefig(self.mkname(image_file))
         plt.close()
@@ -408,6 +433,7 @@ class BruteABC:
             if len(plotsamps[:, 0]) > len(self.params):
                 fig = triangle.corner(plotsamps, labels = self.params)
                 fig.savefig(self.mkname(file_name), dpi = 150)
+                plt.close()
             else:
                 print "Number of valid samples (", len(plotsamps[:, 0]), \
                 ") for metric", j + 1, \
@@ -418,6 +444,7 @@ class BruteABC:
         Save plots of the posteriors (as histograms), one per parameter
         to a file name composed as file_stem_parameter.png
         """
+        barcolours = [_DEFAULT_LINE_COLOURS[i] for i in range(self.n_metrics)]
         self.computeScales()
         for j in range(self.n_metrics):
 #            postsamples = self.df[np.fabs(self.df[self.headers[j]])
@@ -430,11 +457,11 @@ class BruteABC:
                 if len(plotsamps[:, 0]) > len(self.params):
                     plt.hist(plotsamps[:,k], 50,
                              label = 'Metric %i (%s)'%(j + 1, self.headers[j]),
-                             alpha = 0.5, normed = True)
+                             alpha = 0.75, normed = True, color = barcolours[j])
 
         for k in range(len(self.params)):
             plt.figure(k + 1)
-            plt.legend(loc = 'best', shadow = False)
+            plt.legend(loc = 'best', shadow = False, fontsize = _DEFAULT_FONT_SIZE, framealpha = 0.5)
             plt.title('Posterior comparison: %s'%(self.params[k]))
             plt.savefig(self.mkname('%s_%s.%s'%(file_stem, self.params[k], suffix)))
 
@@ -444,6 +471,71 @@ class BruteABC:
         for chr in ";:<>?/\\\"\'|`{}[]#$^&*()":
             rename = rename.replace(chr, "_")
         return(rename)
+
+class ParamOption:
+    def __init__(self, file):
+        self.param = pd.read_csv(file, sep = ",", header = 0)
+        self.file = file
+        self.name = self.file[:-4]
+
+    def setName(name):
+        self.name = name
+
+    def select(self, df):
+        s = df
+        for k in range(len(self.param)):
+            if(self.param['type'] == 'numeric'):
+                s = s[s[self.param['parameter'][k]] >= self.param['minimum'][k]
+                      & s[self.param['parameter'][k]] <= self.param['maximum'][k]]
+            else:
+                s = s[s[self.param['parameter'][k]] == self.param['minimum'][k]
+                      | s[self.param['parameter'][k]] == self.param['maximum'][k]
+                      | s[self.param['parameter'][k]] == self.param['setting'][k]]
+        return(s)
+
+    def abc(self, df, metrics):
+        s = self.select(df)
+        abc = BruteABC(df, self.param, metrics)
+        return(abc)
+
+    @staticmethod
+    def buildarray(filenames):
+        return([ParamOption(filenames[i]) for i in range(len(filenames))])
+
+    @staticmethod
+    def plotarray(paramopts, data, metrics, image_file,
+                  scaled = True, log = False, ratio = True,
+                  line_colours = [],
+                  legend_pos = _DEFAULT_LEGEND_POS,
+                  x_label = _DEFAULT_EP_LABEL,
+                  y_label = _DEFAULT_EVIDENCE_LABEL,
+                  font_size = _DEFAULT_FONT_SIZE):
+
+        if line_colours == []:
+            line_colours = _DEFAULT_LINE_COLOURS
+
+        abcs = [paramopts[i].abc(data, metrics) for i in range(len(paramopts))]
+
+        for(j in range(len(metrics))):
+            for(i in range(len(abcs))):
+                xdata = abcs[i].epsilons(j, scaled, log)
+                data = abcs[i].evidences(j, log, ratio)
+                plt.plot(xdata, (data), linewidth = 2,
+                         linestyle = '-', color = line_colours[i],
+                         label = self.name)
+
+            plt.title('Metric %i (%s)'%(j + 1, metrics['metric'][j]))
+            plt.xlabel(x_label)
+            plt.ylabel(y_label)
+            legend = plt.legend(loc = legend_pos, shadow = False, frameon = False,
+                                fontsize = font_size) #, markerfirst = False)
+            if not log:
+                plt.plot([0, 1], [1, 1], linestyle = 'dashed', color = '#000000')
+            plt.xlim([0, 1])
+            plt.savefig(self.mkname('%s_%s.%s'%(image_file[:-4],
+                        metrics['metric'][j], image_file[-3:]))
+            plt.close()
+
 
 if __name__ == "__main__":
     if(len(sys.argv) < 5):
