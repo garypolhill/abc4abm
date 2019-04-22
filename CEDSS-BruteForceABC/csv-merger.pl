@@ -5,19 +5,32 @@
 # Program to merge CSV files. NAs are entered in cells for which there are
 # no data.
 #
-# Usage: ./csv-merger.pl [-pattern <regexp>] [-quiet] [-NA <str>] <output file>
+# Usage: ./csv-merger.pl [-pattern <regexp>] [-quiet] [-NA <str>] [-same]
+#             [-modified <days ago>] [-since <YYYY-MM-DD>] <output file>
 #             [<CSV files or dirs...>]
 #
 # If the -pattern <regexp> option is given, then the arguments should be
 # directories to look in rather than CSV files. The reason the option is given
 # is to provide for cases where the number of CSV files to merge is too many
-# for the command line. The -quiet option shuts the script up -- it normally
-# spits out information about how compatible all the CSV files are. The -NA
-# option allows user configuration of the string to use for empty cells.
+# for the command line.
+#
+# The -quiet option shuts the script up -- it normally spits out information
+# about how compatible all the CSV files are.
+#
+# The -NA option allows user configuration of the string to use for empty cells.
+#
+# The -same option will enforce that every file must have the same header line
+# as whichever the first file is that is read.
+#
+# The -modified option allows you to specify a number of days ago since which
+# the files to be checked must have been modified,
+#
+# The -since option does the same as -modified, but allows you to specify a
+# date rather than a number of datys ago.
 #
 # Gary Polhill 22 April 2019
 #
-# Copyright (C) 2019 The James Hutton Institute
+# Copyright (C) 2019  The James Hutton Institute
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -33,6 +46,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>
 
 use strict;
+use Time::Local;
 
 # Globals
 
@@ -40,6 +54,8 @@ my $NA = 'NA';
 my $pattern = 0;
 my $use_pattern = 0;
 my $quiet = 0;
+my $allow_diff = 1;
+my $mod_days = 0;
 
 # Process command-line options and check usage
 
@@ -56,6 +72,19 @@ while($ARGV[0] =~ /^-/) {
     my $regex = shift(@ARGV);
     $pattern = qr/$regex/;
   }
+  elsif($option eq '-same') {
+    $allow_diff = 0;
+  }
+  elsif($option eq '-modified') {
+    $mod_days = shift(@ARGV);
+  }
+  elsif($option eq '-since') {
+    my $date = shift(@ARGV);
+    my ($year, $month, $mday) = split(/-/, $date);
+
+    my $time = timelocal(0, 0, 0, $mday, $month - 1, $year - 1900);
+    $mod_days = (time - $time) / 86400;
+  }
   else {
     die "Option $option not recognized\n";
   }
@@ -63,7 +92,8 @@ while($ARGV[0] =~ /^-/) {
 
 if(scalar(@ARGV) < 2) {
   die "Usage: $0 [-pattern <perl regexp>] [-quiet] [-NA <empty cell string>] ",
-    "<Output CSV file> <CSV files or dirs if -pattern given...>\n";
+    "[-same] [-modified <days ago>] [-since <YYYY-MM-DD>] <Output CSV file> ",
+    "<CSV files or dirs if -pattern given...>\n";
 }
 
 my $output = shift(@ARGV);
@@ -74,6 +104,10 @@ if($use_pattern) {
   foreach my $dir (@ARGV) {
     opendir(DIR, $dir);
     foreach my $file (readdir(DIR)) {
+      next if -z "$dir/$file";
+      if($mod_days > 0 && -M "$dir/$file" > $mod_days) {
+	next;
+      }
       if($file =~ $pattern) {
 	push(@input, "$dir/$file");
       }
@@ -114,10 +148,26 @@ foreach my $file (@input) {
       if(!$quiet) {
 	print "Input file $file introduces new column heading $this_header\n";
       }
+      if(!$allow_diff && $file ne $input[0]) {
+	die "Input file $file has a column heading $this_header not in the ",
+	  "first input file $input[0]\n";
+      }
       push(@headers, $this_header);
     }
     else {
       $header_count{$this_header}++;
+    }
+  }
+  if(!$allow_diff && $file ne $input[0]) {
+    my %my_headers;
+    foreach my $this_header (@this_headers) {
+      $my_headers{$this_header} = 1;
+    }
+    foreach my $header (@headers) {
+      if(!defined($my_headers{$header})) {
+	die "Input file $file does not have column heading $header that ",
+	  "appears in the first input file $input[0]\n";
+      }
     }
   }
 
@@ -146,6 +196,10 @@ foreach my $file (@input) {
     # given a header.
 
     while(scalar(@entry) > 0) {
+      if(!$allow_diff) {
+	die "Input file $file has data without a column heading, so cannot ",
+	  "be sure that all files have the same headings\n";
+      }
       $unheaded++;
       my $unheader = "noheading$unheaded";
       if(defined($header_count{$unheader})) {
