@@ -98,7 +98,7 @@ _DEFAULT_LINE_COLOURS = [
                          '#e31a1c', # third
                          '#ff7f00', # fourth
                          '#6a3d9a', # fifth
-                         '#ffff99'  # sixth
+                         '#ffff99', # sixth
                          '#a6cee3', # seventh
                          '#b2df8a', # eighth
                          '#fb9a99', # ninth
@@ -139,6 +139,7 @@ class BruteABC:
         self.calibvals = [metrics['target'][i] for i in range(self.n_metrics)]
         self.minima = [metrics['minimum'][i] for i in range(self.n_metrics)]
         self.maxima = [metrics['maximum'][i] for i in range(self.n_metrics)]
+
         self.rescale = rescale
         self.targets = pd.DataFrame(df.loc[:, self.headers])
         self.difima = [self.maxima[i] - self.minima[i] for i in range(self.n_metrics)]
@@ -148,11 +149,26 @@ class BruteABC:
                 self.calibvals[i] = np.log(self.calibvals[i])
                 self.minima[i] = np.log(self.minima[i])
                 self.maxima[i] = np.log(self.maxima[i])
-                self.difima[i] = np.log(self.difima[i])
+                self.difima[i] = self.maxima[i] - self.minima[i]
                 self.df.loc[:, self.headers[i]] = np.log(self.df[self.headers[i]].to_numpy())
             for k in range(len(df.index)):
                 self.targets.iloc[k, i] \
                     = (self.targets.iloc[k, i] - self.calibvals[i]) / self.difima[i]
+            if self.minima[i] > self.calibvals[i]:
+                sys.stderr.write("Metric %d (%s): minimum (%g) > calibration "
+                                 "value (%g)\n"%(i, self.headers[i],
+                                 self.minima[i], self.calibvals[i]))
+                sys.exit(1)
+            if self.calibvals[i] > self.maxima[i]:
+                sys.stderr.write("Metric %d (%s): calibration value (%g) > "
+                                 "maximum (%g)\n"%(i, self.headers[i],
+                                 self.calibvals[i], self.maxima[i]))
+                sys.exit(1)
+            if self.minima[i] > self.maxima[i]:
+                sys.stderr.write("Metric %d (%s): minimum (%g) > "
+                                 "maximum (%g)\n"%(i, self.headers[i],
+                                 self.minima[i], self.maxima[i]))
+                sys.exit(1)
 
         self.epsteps = epsteps
         self.epsilons = [1.0 * (maxep / epsteps) * i for i in range(epsteps + 1)]
@@ -498,41 +514,93 @@ class BruteABC:
         dfnames = [df.columns[i] for i in range(len(df.columns))]
         for name in pnames:
             if(dfnames.count(name) == 0):
-                sys.stderr.write("Parameter name %s in parameter file %s "
+                sys.stderr.write("Parameter name %s in parameter file %s "%(name, paramfile)
                                  + "does not appear as a column heading in "
-                                 + "run data file %s\n"%(name, paramfile, dffile))
+                                 + "run data file %s\n"%(dffile))
                 if(die):
                     sys.exit(1)
                 return(False)
             if(dfnames.count(name) > 1):
-                sys.stderr.write("Parameter name %s in parameter file %s "
+                sys.stderr.write("Parameter name %s in parameter file %s "%(name, paramfile)
                                  + "appears more than once as a column heading "
-                                 + "in run data file %s\n"%(name, paramfile, dffile))
+                                 + "in run data file %s\n"%(dffile))
                 if(die):
                     sys.exit(1)
                 return(False)
 
         for name in mnames:
             if(dfnames.count(name) == 0):
-                sys.stderr.write("Metric name %s in metric file %s "
+                sys.stderr.write("Metric name %s in metric file %s "%(name, metricfile)
                                  + "does not appear as a column heading in "
-                                 + "run data file %s\n"%(name, metricfile, dffile))
+                                 + "run data file %s\n"%(dffile))
                 if(die):
                     sys.exit(1)
                 return(False)
             if(dfnames.count(name) > 1):
-                sys.stderr.write("Metric name %s in metric file %s "
+                sys.stderr.write("Metric name %s in metric file %s "%(name, metricfile)
                                  + "appears more than once as a column heading "
-                                 + "in run data file %s\n"%(name, metricfile, dffile))
+                                 + "in run data file %s\n"%(dffile))
                 if(die):
                     sys.exit(1)
                 return(False)
 
         return(True)
 
+class Param:
+    def __init__(self, parameter, display, typestr, setting, minimum, maximum):
+        self.parameter = parameter
+        self.display = display
+        self.typestr = typestr
+        self.setting = setting
+        self.minimum = minimum
+        self.maximum = maximum
+        self.isNumeric = (self.typestr == 'numeric')
+        self.isDynamic = (self.isNumeric and (self.minimum < self.maximum))
+        self.isConstant = (self.minimum == self.maximum)
+        self.done_analysis = False
+        self.isInt = False
+        self.dfMin = None
+        self.dfMax = None
+
+    def analyse(self, df):
+        if(not self.done_analysis):
+            self.isInt = True
+            for i in range(len(df)):
+                if(self.typestr == 'numeric'):
+                    num = df.loc[i, self.parameter]
+                    if(num != int(num)):
+                        self.isInt = False
+                    if(i == 0):
+                        self.dfMin = num
+                        self.dfMax = num
+                    else:
+                        if num < self.dfMin:
+                            self.dfMin = num
+                        if num > self.dfMax:
+                            self.dfMax = num
+                else:
+                    self.isInt = False
+            self.done_analysis = True
+
+    def reanalyse(self, df):
+        self.done_analyis = False
+        return(self.analyse(df))
+
+    @staticmethod
+    def read(file):
+        paramdata = pd.read_csv(file, sep = ",", header = 0)
+        return([Param(paramdata['parameter'][i],
+                      paramdata['display'][i],
+                      paramdata['type'][i],
+                      paramdata['setting'][i],
+                      paramdata['minimum'][i],
+                      paramdata['maximum'][i]) for i in range(len(paramdata))])
+
+
 class ParamOption:
     def __init__(self, file):
-        self.param = pd.read_csv(file, sep = ",", header = 0)
+        self.paramdf = pd.read_csv(file, sep = ",", header = 0)
+        self.param = Param.read(file)
         self.file = file
         self.name = self.file[:-4]
         if(self.name[:6] == 'param-'):
@@ -542,20 +610,36 @@ class ParamOption:
         self.name = name
 
     def select(self, df):
-        s = df
+        s = df.copy()
         for k in range(len(self.param)):
-            if(self.param['type'] == 'numeric'):
-                s = s[s[self.param['parameter'][k]] >= self.param['minimum'][k]
-                      & s[self.param['parameter'][k]] <= self.param['maximum'][k]]
+            if(self.param[k].isNumeric):
+                if(self.param[k].isConstant):
+                    s = s[s[self.param[k].parameter] == self.param[k].minimum]
+                else:
+                    self.param[k].analyse(df)
+                    if(self.param[k].isInt):
+                        s = s[(s[self.param[k].parameter] >= self.param[k].minimum)
+                              & (s[self.param[k].parameter] <= self.param[k].maximum)]
+                    else:
+                        s = s[(s[self.param[k].parameter] > self.param[k].minimum)
+                              & (s[self.param[k].parameter] < self.param[k].maximum)]
             else:
-                s = s[s[self.param['parameter'][k]] == self.param['minimum'][k]
-                      | s[self.param['parameter'][k]] == self.param['maximum'][k]
-                      | s[self.param['parameter'][k]] == self.param['setting'][k]]
+                s = s[(s[self.param[k].parameter] == self.param[k].minimum)
+                      | (s[self.param[k].parameter] == self.param[k].maximum)
+                      | (s[self.param[k].parameter] == self.param[k].setting)]
+            # print("Combination %s: %d rows after parameter %s in range [%g, %g]"%(
+            #     self.file, len(s), self.param['parameter'][k],
+            #     self.param['minimum'][k], self.param['maximum'][k]
+            # ))
+        print("Combination %s: %d rows"%(self.file, len(s)))
         return(s)
 
     def abc(self, df, metrics):
         s = self.select(df)
-        abc = BruteABC(df, self.param, metrics)
+        if(len(s) > 0):
+            abc = BruteABC(s, self.paramdf, metrics)
+        else:
+            abc = None
         return(abc)
 
     @staticmethod
@@ -578,11 +662,12 @@ class ParamOption:
 
         for j in range(len(metrics)):
             for i in range(len(abcs)):
-                xdata = abcs[i].epsilons(j, scaled, log)
-                data = abcs[i].evidences(j, log, ratio)
-                plt.plot(xdata, (data), linewidth = 2,
-                         linestyle = '-', color = line_colours[i],
-                         label = self.name)
+                if(not abcs[i] is None):
+                    xdata = abcs[i].getEpsilons(j, scaled, log)
+                    data = abcs[i].getEvidences(j, log, ratio)
+                    plt.plot(xdata, (data), linewidth = 2,
+                            linestyle = '-', color = line_colours[i],
+                            label = paramopts[i].name)
 
             plt.title('Metric %i (%s)'%(j + 1, metrics['display'][j]))
             plt.xlabel(x_label)
@@ -592,7 +677,7 @@ class ParamOption:
             if not log:
                 plt.plot([0, 1], [1, 1], linestyle = 'dashed', color = '#000000')
             plt.xlim([0, 1])
-            plt.savefig(self.mkname('%s_%s.%s'%(image_file[:-4],
+            plt.savefig(BruteABC.mkname('%s_%s.%s'%(image_file[:-4],
                         metrics['metric'][j], image_file[-3:])))
             plt.close()
 
@@ -670,7 +755,7 @@ if __name__ == "__main__":
         params = ParamOption.buildarray(sys.argv[5:])
 
         for i in range(len(params)):
-            BruteABC.ckdata(df, params[i], metrics,
+            BruteABC.ckdata(df, params[i].paramdf, metrics,
                             sys.argv[2], sys.argv[5 + i], sys.argv[3])
 
         ParamOption.plotarray(params, df, metrics, plotfile)
