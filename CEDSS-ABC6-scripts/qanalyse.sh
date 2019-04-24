@@ -27,10 +27,9 @@ then
 fi
 
 # Pick a tar file from the list
-FULTAR=`head -n $SGE_TASK_ID $LS | tail -n 1`
+FULTAR=`head -n $RUN $LS | tail -n 1`
 FULDIR=`echo $FULTAR | sed -e 's/.tar.bz2$//'`
 
-TAR=`basename $FULTAR`
 ABCDIR=`dirname $FULDIR`
 RUNDIR=`basename $FULDIR`
 
@@ -42,10 +41,6 @@ fi
 
 
 cd $TOPDIR/$ABCDIR
-
-tar jxf $TAR			# Extract the results in the ABC dir
-				# (the script will wrap them back up
-				# again)
 
 $TOPDIR/$SCRIPTDIR/$SCRIPT -zip $RUNDIR
 
