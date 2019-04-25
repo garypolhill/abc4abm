@@ -547,6 +547,8 @@ class BruteABC:
         return(True)
 
 class Param:
+    analyses = dict()
+
     def __init__(self, parameter, display, typestr, setting, minimum, maximum):
         self.parameter = parameter
         self.display = display
@@ -581,9 +583,18 @@ class Param:
                 else:
                     self.isInt = False
             self.done_analysis = True
+            Param.analyses[self.parameter] = self
+        elif(self.parameter in analyses):
+            other = Param.analyses[self.parameter]
+            self.isInt = other.isInt
+            self.dfMin = other.dfMin
+            self.dfMax = other.dfMax
+            self.done_analysis = True
 
     def reanalyse(self, df):
         self.done_analyis = False
+        if self.parameter in Param.analyses:
+            del analyses[self.parameter]
         return(self.analyse(df))
 
     @staticmethod
@@ -598,19 +609,25 @@ class Param:
 
 
 class ParamOption:
-    def __init__(self, file):
+    assignees = dict()
+
+    def __init__(self, file, exclusive = False):
         self.paramdf = pd.read_csv(file, sep = ",", header = 0)
         self.param = Param.read(file)
         self.file = file
         self.name = self.file[:-4]
         if(self.name[:6] == 'param-'):
             self.name = self.name[6:]
+        self.exclusive = exclusive
 
     def setName(name):
         self.name = name
 
     def select(self, df):
-        s = df.copy()
+        s = df.assign(row_id = range(len(df)))
+        if self.exclusive:
+            not_already = [s.loc[s.index[j], 'row_id'] not in ParamOption.assignees for j in range(len(s))]
+            s = s[not_already]
         for k in range(len(self.param)):
             if(self.param[k].isNumeric):
                 if(self.param[k].isConstant):
@@ -632,6 +649,10 @@ class ParamOption:
             #     self.param['minimum'][k], self.param['maximum'][k]
             # ))
         print("Combination %s: %d rows"%(self.file, len(s)))
+
+        for j in range(len(s)):
+            if s.loc[s.index[j], 'row_id'] not in ParamOption.assignees:
+                ParamOption.assignees[s.loc[s.index[j], 'row_id']] = self
         return(s)
 
     def abc(self, df, metrics):
@@ -644,7 +665,15 @@ class ParamOption:
 
     @staticmethod
     def buildarray(filenames):
-        return([ParamOption(filenames[i]) for i in range(len(filenames))])
+        exclusive = False
+        value = list()
+        for i in range(len(filenames)):
+            if filenames[i] == 'exclusive':
+                exclusive = True
+            else:
+                value.append(ParamOption(filenames[i], exclusive))
+
+        return(value)
 
     @staticmethod
     def plotarray(paramopts, data, metrics, image_file,
